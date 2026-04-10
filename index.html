@@ -1,163 +1,541 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AV Technology Invoice</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>AV TECHNOLOGY | Professional Tax Invoice</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    body {
+      background: #eef2f5;
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
 
-<style>
-body { font-family: Arial; padding: 10px; }
-input { padding: 5px; margin: 3px; }
-table { width: 100%; border-collapse: collapse; }
-td, th { border: 1px solid black; padding: 5px; font-size: 12px; }
-.center { text-align: center; }
-.right { text-align: right; }
-h2 { text-align: center; }
-button { padding: 10px; margin: 10px 0; width: 100%; background: green; color: white; }
-</style>
+    /* MAIN CARD */
+    .app-wrapper {
+      max-width: 1280px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      padding: 24px 28px;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #2c3e66;
+    }
+    .tab-btn.active {
+      background: #1e3a8a;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active-pane {
+      display: block;
+    }
+
+    /* FORM & INVOICE STYLES */
+    h2 {
+      font-size: 1.7rem;
+      color: #0f2b4d;
+      border-left: 6px solid #2563eb;
+      padding-left: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-field label {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.85rem;
+    }
+    .input-field input, .input-field select {
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+    .input-field input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    }
+
+    /* ITEMS TABLE */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.85rem;
+    }
+    .items-table th, .items-table td {
+      border: 1px solid #d1d5db;
+      padding: 10px 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .items-table th {
+      background: #f1f5f9;
+      font-weight: 700;
+    }
+    .items-table input {
+      width: 100%;
+      min-width: 70px;
+      padding: 8px 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .add-row-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    .remove-row {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+
+    /* ACTION BUTTONS */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 30px 0 20px;
+    }
+    .btn-primary {
+      background: #0f3b2c;
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .btn-secondary {
+      background: #2c3e66;
+    }
+    .btn-wa {
+      background: #25D366;
+    }
+
+    /* INVOICE PREVIEW (PRINT LAYOUT) */
+    .invoice-preview {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      margin-top: 25px;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      .app-wrapper {
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .tabs, .action-buttons, .tab-btn, .add-row-btn, .remove-row, .btn-primary, .btn-secondary, .btn-wa, #loadInvoiceSection {
+        display: none !important;
+      }
+      .invoice-preview {
+        box-shadow: none;
+        padding: 0;
+      }
+      .stamp-sign {
+        break-inside: avoid;
+      }
+    }
+
+    /* BLUE STAMP + SIGNATURE */
+    .stamp-sign {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 35px;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    .blue-stamp {
+      background: rgba(37, 99, 235, 0.12);
+      border: 3px solid #1e40af;
+      color: #1e3a8a;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      transform: rotate(-6deg);
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+    .signature-area {
+      text-align: right;
+      border-top: 2px dashed #334155;
+      width: 220px;
+      padding-top: 8px;
+      font-weight: 500;
+    }
+
+    /* MISC */
+    .total-line {
+      font-weight: bold;
+      background: #fef9e3;
+      text-align: right;
+    }
+    .word-amount {
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 14px;
+      margin: 15px 0;
+    }
+  </style>
 </head>
-
 <body>
+<div class="app-wrapper">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="create">➕ Create Invoice</button>
+    <button class="tab-btn" data-tab="view">🔍 View / Share Past Invoice</button>
+  </div>
 
-<h2>TAX INVOICE</h2>
+  <!-- CREATE INVOICE TAB -->
+  <div id="createTab" class="tab-pane active-pane">
+    <h2>📄 AV TECHNOLOGY – TAX INVOICE</h2>
+    <div class="form-grid">
+      <div class="input-field"><label>M/S (Customer Name) *</label><input type="text" id="customerName" placeholder="M/s ABC Traders"></div>
+      <div class="input-field"><label>Customer GSTIN</label><input type="text" id="custGstin" placeholder="07XXXXXX"></div>
+      <div class="input-field"><label>State Code *</label><input type="text" id="stateCode" placeholder="07 for Delhi" value="07"></div>
+      <div class="input-field"><label>Vehicle No.</label><input type="text" id="vehicleNo" placeholder="DL 01 AB 1234"></div>
+      <div class="input-field"><label>Date of Delivery</label><input type="date" id="deliveryDate"></div>
+      <div class="input-field"><label>Place of Supply</label><input type="text" id="placeSupply" placeholder="New Delhi"></div>
+      <div class="input-field"><label>Transport Mode</label><input type="text" id="transportMode" placeholder="Road / Van"></div>
+      <div class="input-field"><label>Cheque No.</label><input type="text" id="chequeNo"></div>
+      <div class="input-field"><label>Bank & Branch</label><input type="text" id="bankBranch" placeholder="Bank / Branch"></div>
+      <div class="input-field"><label>Cartage (Labour & Others) ₹</label><input type="number" id="cartage" value="0" step="1"></div>
+    </div>
 
-<div id="invoice">
+    <h3>🛒 Invoice Items (S.No, Particulars, HSN, Qty, Rate)</h3>
+    <table class="items-table" id="itemsTable">
+      <thead>
+        <tr><th>S.No</th><th>PARTICULARS</th><th>HSN CODE</th><th>QTY</th><th>RATE (₹)</th><th>AMOUNT (₹)</th><th></th></tr>
+      </thead>
+      <tbody id="itemsBody"></tbody>
+    </table>
+    <button type="button" class="add-row-btn" id="addRowBtn">+ Add New Item</button>
 
-<b>GSTIN:</b> 07ABIFA3151F1ZS &nbsp;&nbsp;&nbsp;
-<b>STATE CODE:</b> 07
+    <div class="action-buttons">
+      <button class="btn-primary" id="generateInvoiceBtn">💾 Generate & Save Invoice</button>
+      <button class="btn-secondary" id="resetFormBtn">⟳ Reset Form</button>
+    </div>
 
-<h3 class="center">AV TECHNOLOGY</h3>
+    <!-- LIVE INVOICE PREVIEW -->
+    <div id="invoicePreview" class="invoice-preview" style="display: none;"></div>
+  </div>
 
-<p><b>Deals In:</b> Projectors, Video Camera, LED Walls, Spare Parts</p>
-<p>20 Part 2 Sainik Vihar Mohan Garden Uttam Nagar New Delhi -59</p>
-<p>Mob: +91 9711166056 | Email: avtechnologyy@gmail.com</p>
-
-<hr>
-
-Party: <input id="party"><br>
-GSTIN: <input id="gstin"><br>
-State Code: <input id="state" value="07"><br>
-
-<table id="items">
-<tr>
-<th>S No</th>
-<th>Particular</th>
-<th>HSN</th>
-<th>Qty</th>
-<th>Rate</th>
-<th>Amount</th>
-</tr>
-</table>
-
-<button onclick="addRow()">+ Add Item</button>
-
-<br>
-
-Taxable Value: ₹ <span id="taxable">0</span><br>
-CGST: ₹ <span id="cgst">0</span><br>
-SGST: ₹ <span id="sgst">0</span><br>
-IGST: ₹ <span id="igst">0</span><br>
-
-<h3>Total: ₹ <span id="total">0</span></h3>
-
-<p><b>Amount in Words:</b> <span id="words"></span></p>
-
-<br>
-
-<div style="display:flex; justify-content:space-between;">
-<div>
-<img src="https://i.ibb.co/7QpKsCX/stamp.png" width="120"><br>
-Stamp
+  <!-- VIEW PAST INVOICE TAB -->
+  <div id="viewTab" class="tab-pane">
+    <h2>🔎 Retrieve Invoice</h2>
+    <div class="form-grid">
+      <div class="input-field"><label>Enter Invoice Number</label><input type="text" id="searchInvNo" placeholder="e.g., INV-1744287600000"></div>
+    </div>
+    <button class="btn-primary" id="fetchInvoiceBtn">Load Invoice</button>
+    <div id="pastInvoiceContainer" style="margin-top: 30px;"></div>
+  </div>
 </div>
-
-<div>
-<br><br><br>
-Signature
-</div>
-</div>
-
-</div>
-
-<button onclick="generatePDF()">Download PDF</button>
 
 <script>
+  // ======================== CONFIGURATION ===========================
+  // 🔁 REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_REPLACE_ME/exec"; 
+  // -----------------------------------------------------------------
+  // For testing without backend, set USE_MOCK = true (data stays in browser)
+  const USE_MOCK = false;  // Set to false once you deploy Apps Script
 
-let rowCount = 0;
+  let itemsRowCount = 1;
 
-function addRow(){
-  rowCount++;
-  let table = document.getElementById("items");
-
-  let row = table.insertRow();
-
-  row.innerHTML = `
-  <td>${rowCount}</td>
-  <td><input oninput="calc()"></td>
-  <td><input></td>
-  <td><input type="number" oninput="calc()"></td>
-  <td><input type="number" oninput="calc()"></td>
-  <td class="amt">0</td>
-  `;
-}
-
-function calc(){
-  let rows = document.querySelectorAll("#items tr");
-  let total = 0;
-
-  rows.forEach((r,i)=>{
-    if(i===0) return;
-
-    let qty = r.cells[3].children[0].value || 0;
-    let rate = r.cells[4].children[0].value || 0;
-
-    let amt = qty * rate;
-    r.cells[5].innerText = amt;
-
-    total += amt;
-  });
-
-  document.getElementById("taxable").innerText = total;
-
-  let state = document.getElementById("state").value;
-
-  let cgst=0, sgst=0, igst=0;
-
-  if(state == "07"){
-    cgst = total * 0.09;
-    sgst = total * 0.09;
-  } else {
-    igst = total * 0.18;
+  // Helper: Convert amount to Indian Rupees words
+  function numberToWords(num) {
+    if (num === 0) return "Zero Rupees Only";
+    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+    function convertLessThanThousand(n) {
+      if (n === 0) return "";
+      if (n < 20) return ones[n] + " ";
+      if (n < 100) return tens[Math.floor(n/10)] + " " + (n%10 !== 0 ? ones[n%10] + " " : "");
+      return ones[Math.floor(n/100)] + " Hundred " + (n%100 !== 0 ? convertLessThanThousand(n%100) : "");
+    }
+    let rupees = Math.floor(num);
+    let paise = Math.round((num - rupees) * 100);
+    let result = "";
+    if (rupees >= 10000000) result += convertLessThanThousand(Math.floor(rupees/10000000)) + "Crore ";
+    rupees %= 10000000;
+    if (rupees >= 100000) result += convertLessThanThousand(Math.floor(rupees/100000)) + "Lakh ";
+    rupees %= 100000;
+    if (rupees >= 1000) result += convertLessThanThousand(Math.floor(rupees/1000)) + "Thousand ";
+    rupees %= 1000;
+    if (rupees >= 100) result += convertLessThanThousand(Math.floor(rupees/100)) + "Hundred ";
+    rupees %= 100;
+    if (rupees > 0) result += convertLessThanThousand(rupees);
+    result = result.trim() + " Rupees";
+    if (paise > 0) result += " and " + convertLessThanThousand(paise).trim() + " Paise";
+    return result + " Only";
   }
 
-  let final = total + cgst + sgst + igst;
+  // Render items table rows
+  function renderItemRows() {
+    const tbody = document.getElementById('itemsBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < itemsRowCount; i++) {
+      const row = tbody.insertRow();
+      row.insertCell(0).innerText = i+1;
+      row.insertCell(1).innerHTML = `<input type="text" id="item_${i}_desc" placeholder="Product / Service">`;
+      row.insertCell(2).innerHTML = `<input type="text" id="item_${i}_hsn" placeholder="HSN">`;
+      row.insertCell(3).innerHTML = `<input type="number" id="item_${i}_qty" value="1" step="1" min="0">`;
+      row.insertCell(4).innerHTML = `<input type="number" id="item_${i}_rate" value="0" step="1" min="0">`;
+      row.insertCell(5).innerHTML = `<span id="item_${i}_amount">0</span>`;
+      const delCell = row.insertCell(6);
+      if (itemsRowCount > 1) {
+        const delBtn = document.createElement('button');
+        delBtn.innerText = '✖';
+        delBtn.className = 'remove-row';
+        delBtn.onclick = (function(idx) { return function() { removeRow(idx); }; })(i);
+        delCell.appendChild(delBtn);
+      }
+    }
+    attachItemEvents();
+  }
 
-  document.getElementById("cgst").innerText = cgst.toFixed(2);
-  document.getElementById("sgst").innerText = sgst.toFixed(2);
-  document.getElementById("igst").innerText = igst.toFixed(2);
-  document.getElementById("total").innerText = final.toFixed(2);
+  function removeRow(idx) {
+    if (itemsRowCount <= 1) return;
+    itemsRowCount--;
+    renderItemRows();
+    calcTaxableAndPreview();
+  }
 
-  document.getElementById("words").innerText = numberToWords(final);
-}
+  function attachItemEvents() {
+    for (let i=0; i<itemsRowCount; i++) {
+      const qtyEl = document.getElementById(`item_${i}_qty`);
+      const rateEl = document.getElementById(`item_${i}_rate`);
+      if (qtyEl) qtyEl.addEventListener('input', () => updateItemAmount(i));
+      if (rateEl) rateEl.addEventListener('input', () => updateItemAmount(i));
+    }
+  }
 
-function numberToWords(num){
-  return num + " Rupees Only";
-}
+  function updateItemAmount(idx) {
+    const qty = parseFloat(document.getElementById(`item_${i}_qty`)?.value) || 0;
+    const rate = parseFloat(document.getElementById(`item_${i}_rate`)?.value) || 0;
+    const amt = qty * rate;
+    const span = document.getElementById(`item_${idx}_amount`);
+    if (span) span.innerText = amt.toFixed(2);
+    calcTaxableAndPreview();
+  }
 
-async function generatePDF(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  function getItemsArray() {
+    let items = [];
+    for (let i=0; i<itemsRowCount; i++) {
+      let desc = document.getElementById(`item_${i}_desc`)?.value || '';
+      let hsn = document.getElementById(`item_${i}_hsn`)?.value || '';
+      let qty = parseFloat(document.getElementById(`item_${i}_qty`)?.value) || 0;
+      let rate = parseFloat(document.getElementById(`item_${i}_rate`)?.value) || 0;
+      let amount = qty * rate;
+      items.push({ sno: i+1, desc, hsn, qty, rate, amount: amount.toFixed(2) });
+    }
+    return items;
+  }
 
-  await doc.html(document.getElementById("invoice"), {
-    callback: function (doc) {
-      doc.save("invoice.pdf");
-    },
-    x: 5,
-    y: 5
+  function calcTaxableAndPreview() {
+    let items = getItemsArray();
+    let taxable = items.reduce((sum, it) => sum + parseFloat(it.amount), 0);
+    let state = document.getElementById('stateCode').value.trim();
+    let isDelhi = (state === "07");
+    let cgst = 0, sgst = 0, igst = 0;
+    if (isDelhi) {
+      cgst = taxable * 0.09;
+      sgst = taxable * 0.09;
+    } else {
+      igst = taxable * 0.18;
+    }
+    let cartage = parseFloat(document.getElementById('cartage').value) || 0;
+    let grandTotal = taxable + cgst + sgst + igst + cartage;
+    document.getElementById('taxablePreview')?.remove();
+    return { taxable, cgst, sgst, igst, grandTotal, isDelhi };
+  }
+
+  function buildInvoiceHTML(invoiceData) {
+    const items = invoiceData.items;
+    const taxable = invoiceData.taxable;
+    const cgst = invoiceData.cgst, sgst = invoiceData.sgst, igst = invoiceData.igst;
+    const grand = invoiceData.grandTotal;
+    const isDelhi = invoiceData.isDelhi;
+    const cartage = invoiceData.cartage;
+    const words = numberToWords(grand);
+    let gstBreakdown = isDelhi ? `<tr><td>CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr><tr><td>SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>` : `<tr><td>IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
+    let itemsRows = '';
+    items.forEach(it => {
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
+    });
+    return `
+      <div style="font-family: monospace, 'Segoe UI'; font-size: 13px; max-width: 100%; overflow-x: auto;">
+        <div style="text-align:center"><h2>TAX INVOICE</h2></div>
+        <div style="display:flex; justify-content:space-between;"><span><b>GSTIN: 07ABIFA3151F1ZS</b></span><span><b>STATE CODE-07</b></span></div>
+        <div style="text-align:center; margin:8px 0"><b>AV TECHNOLOGY</b><br>DEALS IN : PROJECTORS .VIDIO CAMERA & OUTDOOR INDOOR LED VIDIO WALLS ,SPARE PARTS<br>20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>MOB;+91 9711166056 .E mail :avtechnologyy@gmail.com</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;"><div><b>M/S :</b> ${invoiceData.customerName}</div><div><b>INVOICE NO :</b> ${invoiceData.invoiceNo}</div>
+        <div><b>GSTIN NO:</b> ${invoiceData.custGstin}</div><div><b>INVOICE DATE :</b> ${invoiceData.invoiceDate}</div>
+        <div><b>VEHICLE NO :</b> ${invoiceData.vehicleNo}</div><div><b>DATE OF DELIVERY :</b> ${invoiceData.deliveryDate}</div>
+        <div><b>PLACE OF SUPPLY :</b> ${invoiceData.placeSupply}</div><div><b>TRANSPORT MODE :</b> ${invoiceData.transportMode}</div>
+        <div><b>STATE CODE :</b> ${invoiceData.stateCode}</div><div><b>CHEQUE / BANK :</b> ${invoiceData.chequeNo} / ${invoiceData.bankBranch}</div></div>
+        <table style="width:100%; border-collapse:collapse; margin:15px 0;" border="1"><thead><tr><th>S NO</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
+        <div style="text-align:right"><b>TAXABLE VALUE : ₹ ${taxable.toFixed(2)}</b></div>
+        <div class="word-amount"><b>AMOUNT IN WORDS :</b> ${words}</div>
+        <table style="width:100%; margin:10px 0;"><tr><td>${gstBreakdown}</td><td><b>CARTAGE : ₹ ${cartage.toFixed(2)}</b></td></tr><tr class="total-line"><td colspan="2"><b>TOTAL SALE VALUE WITH GST : ₹ ${grand.toFixed(2)}</b></td></tr></table>
+        <div><b>TERMS & CONDITIONS :</b><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICITION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
+        <div class="stamp-sign"><div class="blue-stamp">🔹 AV TECHNOLOGY 🔹<br>DELHI</div><div class="signature-area"><br>FOR AV TECHNOLOGY<br><span style="border-top:1px solid #000; display:inline-block; width:160px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>AUTHORISED SIGNATORY</div></div>
+        <div style="font-size:10px; text-align:center;">E.& O. E.</div>
+      </div>`;
+  }
+
+  async function generateAndSave() {
+    const customerName = document.getElementById('customerName').value.trim();
+    if (!customerName) { alert("Please enter M/S (Customer Name)"); return; }
+    const items = getItemsArray().filter(it => it.desc.trim() !== "");
+    if (items.length === 0) { alert("Add at least one item with description"); return; }
+    const taxable = items.reduce((s,i)=> s+parseFloat(i.amount),0);
+    const stateCode = document.getElementById('stateCode').value.trim();
+    const isDelhi = (stateCode === "07");
+    let cgst=0,sgst=0,igst=0;
+    if(isDelhi){ cgst = taxable*0.09; sgst = taxable*0.09; } else { igst = taxable*0.18; }
+    const cartage = parseFloat(document.getElementById('cartage').value) || 0;
+    const grandTotal = taxable + cgst + sgst + igst + cartage;
+    const invoiceNo = "INV-" + Date.now();
+    const today = new Date().toLocaleDateString('en-IN');
+    const invoiceData = {
+      invoiceNo, invoiceDate: today, customerName, custGstin: document.getElementById('custGstin').value,
+      stateCode, vehicleNo: document.getElementById('vehicleNo').value, deliveryDate: document.getElementById('deliveryDate').value,
+      placeSupply: document.getElementById('placeSupply').value, transportMode: document.getElementById('transportMode').value,
+      chequeNo: document.getElementById('chequeNo').value, bankBranch: document.getElementById('bankBranch').value,
+      cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items: items
+    };
+    const htmlInvoice = buildInvoiceHTML(invoiceData);
+    const previewDiv = document.getElementById('invoicePreview');
+    previewDiv.innerHTML = htmlInvoice;
+    previewDiv.style.display = 'block';
+    // STORE to sheet
+    if (!USE_MOCK && SCRIPT_URL.includes("REPLACE_ME")) {
+      alert("⚠️ Please replace SCRIPT_URL with your Google Apps Script URL (see instructions below). Invoice not saved to cloud.\n\nBut you can still print / share this preview.");
+    } else if (!USE_MOCK) {
+      try {
+        let response = await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) });
+        alert("✅ Invoice saved to Google Sheet!\nNumber: "+invoiceNo);
+      } catch(e) { alert("Cloud save failed, but invoice is ready. "+e.message); }
+    } else {
+      localStorage.setItem(invoiceNo, JSON.stringify(invoiceData));
+      alert(`📌 Mock save: Invoice ${invoiceNo} stored locally.`);
+    }
+    window.open(`https://wa.me/?text=🧾 AV TECHNOLOGY Invoice ${invoiceNo} Total: ₹${grandTotal.toFixed(2)}`, '_blank');
+  }
+
+  document.getElementById('addRowBtn').addEventListener('click', () => { itemsRowCount++; renderItemRows(); calcTaxableAndPreview(); });
+  document.getElementById('generateInvoiceBtn').addEventListener('click', generateAndSave);
+  document.getElementById('resetFormBtn').addEventListener('click', () => { location.reload(); });
+  document.getElementById('fetchInvoiceBtn').addEventListener('click', async () => {
+    const invNo = document.getElementById('searchInvNo').value.trim();
+    if(!invNo) return alert("Enter invoice number");
+    if(!USE_MOCK && !SCRIPT_URL.includes("REPLACE_ME")) {
+      alert("To fetch from sheet, implement doGet in Apps Script. For demo, use mock mode.");
+    } else if(USE_MOCK) {
+      let data = localStorage.getItem(invNo);
+      if(data) { document.getElementById('pastInvoiceContainer').innerHTML = buildInvoiceHTML(JSON.parse(data)); }
+      else { document.getElementById('pastInvoiceContainer').innerHTML = "<p>Not found locally</p>"; }
+    } else {
+      alert("Please configure Apps Script GET method or use mock.");
+    }
   });
-}
 
+  renderItemRows();
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active-pane'));
+      if(btn.dataset.tab === 'create') document.getElementById('createTab').classList.add('active-pane');
+      else document.getElementById('viewTab').classList.add('active-pane');
+    });
+  });
 </script>
 
+<!-- ========== GOOGLE APPS SCRIPT CODE (Copy & Deploy) ========== -->
+<!-- 
+  Save this as a new Google Apps Script project, deploy as Web App (execute as "Me", access "Anyone").
+  Replace the SCRIPT_URL above with your deployment URL.
+
+  function doPost(e) {
+    var data = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    sheet.appendRow([data.invoiceNo, data.invoiceDate, data.customerName, data.grandTotal, JSON.stringify(data.items)]);
+    return ContentService.createTextOutput("OK");
+  }
+  function doGet(e) {
+    var inv = e.parameter.invoiceNo;
+    // implement search logic
+    return ContentService.createTextOutput("GET endpoint ready");
+  }
+-->
 </body>
 </html>
