@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AV Technology Invoice</title>
+
+<style>
+body { font-family: Arial; padding: 20px; }
+input { width: 100%; padding: 10px; margin: 5px 0; }
+button { padding: 10px; width: 100%; background: green; color: white; }
+</style>
+</head>
+
+<body>
+
+<h2>AV Technology Billing</h2>
+
+<input id="party" placeholder="Party Name">
+<input id="gstin" placeholder="GSTIN">
+<input id="state" placeholder="State Code (07 for Delhi)">
+<input id="amount" placeholder="Amount">
+
+<button onclick="save()">Generate Invoice</button>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzsICmotSD7-sFmi0K4lc3MDYTXU9gKHHsoc6aevf9LimKTJPyfSqhZKEMB0r3jTyHG/exec";
+
+// simple login
+const allowed = ["sahilmotors7@gmail.com","avtechnologyy@gmail.com"];
+const email = prompt("Enter your email");
+
+if(!allowed.includes(email)){
+  document.body.innerHTML = "Access Denied";
+}
+
+// GST calculation
+function save(){
+
+  let amount = parseFloat(document.getElementById("amount").value);
+  let state = document.getElementById("state").value;
+
+  let cgst=0, sgst=0, igst=0;
+
+  if(state == "07"){
+    cgst = amount * 0.09;
+    sgst = amount * 0.09;
+  } else {
+    igst = amount * 0.18;
+  }
+
+  let total = amount + cgst + sgst + igst;
+
+  const data = {
+    invoiceNo: "INV-" + Date.now(),
+    date: new Date().toLocaleDateString(),
+    party: document.getElementById("party").value,
+    gstin: document.getElementById("gstin").value,
+    state: state,
+    amount: amount,
+    cgst: cgst,
+    sgst: sgst,
+    igst: igst,
+    total: total
+  };
+
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => res.text())
+  .then(() => {
+    alert("Invoice Saved Successfully");
+    window.open("https://wa.me/?text=Invoice Amount: ₹"+total);
+  });
+
+}
+</script>
+
+</body>
+</html>
