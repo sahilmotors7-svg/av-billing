@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>AV TECHNOLOGY | Professional Tax Invoice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>AV TECHNOLOGY | Professional Invoice Suite</title>
   <style>
     * {
       margin: 0;
@@ -12,170 +12,185 @@
     }
 
     body {
-      background: #eef2f5;
-      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #e2e8f0;
+      font-family: 'Segoe UI', 'Roboto', 'Inter', system-ui, -apple-system, sans-serif;
       padding: 24px 16px;
       display: flex;
       justify-content: center;
+      align-items: center;
     }
 
-    /* MAIN CARD */
-    .app-wrapper {
-      max-width: 1280px;
+    /* MAIN APP CONTAINER - A4 FRIENDLY */
+    .app-container {
+      max-width: 210mm;
       width: 100%;
+      margin: 0 auto;
       background: white;
-      border-radius: 32px;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+      border-radius: 28px;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
       overflow: hidden;
-      padding: 24px 28px;
+      transition: all 0.2s;
     }
 
     /* TABS */
     .tabs {
       display: flex;
-      gap: 12px;
-      margin-bottom: 30px;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 12px;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 16px 24px 0 24px;
+      border-bottom: 2px solid #e2edff;
     }
     .tab-btn {
       background: none;
       border: none;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
-      padding: 8px 20px;
-      border-radius: 40px;
+      padding: 10px 20px;
+      border-radius: 40px 40px 0 0;
       cursor: pointer;
       transition: 0.2s;
-      color: #2c3e66;
+      color: #1e293b;
+      font-family: inherit;
     }
     .tab-btn.active {
-      background: #1e3a8a;
-      color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background: white;
+      color: #1e4a76;
+      border-bottom: 3px solid #1e4a76;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.02);
     }
     .tab-pane {
       display: none;
+      padding: 28px 24px;
     }
     .tab-pane.active-pane {
       display: block;
     }
 
-    /* FORM & INVOICE STYLES */
-    h2 {
-      font-size: 1.7rem;
-      color: #0f2b4d;
-      border-left: 6px solid #2563eb;
-      padding-left: 16px;
-      margin-bottom: 20px;
-    }
-
+    /* FORM STYLES - MOBILE FRIENDLY GRID */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 18px;
-      margin-bottom: 25px;
+      margin-bottom: 28px;
     }
-    .input-field {
+    .field {
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
-    .input-field label {
-      font-weight: 600;
-      color: #1e293b;
-      font-size: 0.85rem;
+    .field label {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #0f3b5c;
+      letter-spacing: 0.3px;
     }
-    .input-field input, .input-field select {
+    .field input, .field select {
       padding: 12px 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 18px;
       font-size: 0.9rem;
       transition: 0.2s;
+      background: white;
+      font-family: inherit;
     }
-    .input-field input:focus {
+    .field input:focus, .field select:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
     }
 
-    /* ITEMS TABLE */
+    /* ITEMS TABLE - HORIZONTAL SCROLL FOR MOBILE */
+    .items-wrapper {
+      overflow-x: auto;
+      margin: 20px 0 15px;
+      border-radius: 20px;
+      border: 1px solid #e2edf2;
+    }
     .items-table {
       width: 100%;
+      min-width: 580px;
       border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
     .items-table th, .items-table td {
-      border: 1px solid #d1d5db;
+      border: 1px solid #d4dcec;
       padding: 10px 8px;
       text-align: center;
       vertical-align: middle;
     }
     .items-table th {
-      background: #f1f5f9;
-      font-weight: 700;
+      background: #f1f6fe;
+      font-weight: 800;
+      color: #0c4e6e;
     }
     .items-table input {
       width: 100%;
-      min-width: 70px;
-      padding: 8px 4px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
+      min-width: 85px;
+      padding: 8px 5px;
+      border: 1px solid #bfd6f0;
+      border-radius: 14px;
       text-align: center;
+      font-size: 0.8rem;
     }
     .add-row-btn {
-      background: #2563eb;
+      background: #0f3b2c;
       color: white;
       border: none;
-      padding: 8px 20px;
+      padding: 10px 22px;
       border-radius: 40px;
       font-weight: bold;
       cursor: pointer;
-      margin: 10px 0;
+      margin-top: 6px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     .remove-row {
-      background: #ef4444;
+      background: #b91c1c;
       color: white;
       border: none;
-      border-radius: 30px;
+      border-radius: 40px;
       padding: 6px 12px;
+      font-weight: bold;
       cursor: pointer;
       font-size: 0.7rem;
     }
 
-    /* ACTION BUTTONS */
+    /* BUTTONS */
     .action-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
-      margin: 30px 0 20px;
+      margin: 28px 0 20px;
     }
     .btn-primary {
-      background: #0f3b2c;
+      background: #1e4a76;
       color: white;
-      padding: 14px 28px;
       border: none;
+      padding: 12px 28px;
       border-radius: 40px;
-      font-weight: bold;
-      font-size: 1rem;
+      font-weight: 700;
+      font-size: 0.9rem;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.2s;
     }
     .btn-secondary {
-      background: #2c3e66;
+      background: #475569;
     }
     .btn-wa {
-      background: #25D366;
+      background: #075e54;
     }
 
-    /* INVOICE PREVIEW (PRINT LAYOUT) */
+    /* INVOICE PREVIEW (A4 PRINT STYLES) */
     .invoice-preview {
       background: white;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-      margin-top: 25px;
+      margin-top: 35px;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 20px 24px;
+      transition: 0.2s;
     }
     @media print {
       body {
@@ -183,133 +198,194 @@
         padding: 0;
         margin: 0;
       }
-      .app-wrapper {
-        padding: 0;
-        margin: 0;
+      .app-container {
         max-width: 100%;
         box-shadow: none;
+        border-radius: 0;
       }
-      .tabs, .action-buttons, .tab-btn, .add-row-btn, .remove-row, .btn-primary, .btn-secondary, .btn-wa, #loadInvoiceSection {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, #fetchInvoiceBtn, .btn-primary, .btn-secondary, .btn-wa, .form-grid, .items-wrapper, .add-row-btn, #loadInvoiceSection {
         display: none !important;
       }
       .invoice-preview {
         box-shadow: none;
-        padding: 0;
+        padding: 0.2in;
+        margin: 0;
       }
-      .stamp-sign {
+      .stamp-sign-area {
         break-inside: avoid;
       }
     }
 
-    /* BLUE STAMP + SIGNATURE */
-    .stamp-sign {
+    /* BRANDING + STAMP + SIGNATURE */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 18px;
+      border-bottom: 2px solid #eef2ff;
+      padding-bottom: 12px;
+    }
+    .brand-name {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #003153;
+      font-family: 'Inter', sans-serif;
+    }
+    .brand-tag {
+      font-size: 0.75rem;
+      color: #2c5a7a;
+      font-weight: 500;
+    }
+    .company-details {
+      font-size: 0.7rem;
+      color: #2d3e50;
+      text-align: center;
+      margin-top: 6px;
+    }
+    .invoice-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      background: #f9fafb;
+      padding: 12px 14px;
+      border-radius: 20px;
+    }
+    .stamp-sign-area {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      margin-top: 35px;
       flex-wrap: wrap;
+      margin-top: 35px;
       gap: 30px;
     }
-    .blue-stamp {
-      background: rgba(37, 99, 235, 0.12);
-      border: 3px solid #1e40af;
-      color: #1e3a8a;
-      padding: 12px 20px;
-      border-radius: 50px;
+    /* Blue Rounded Seal (stamp) */
+    .rounded-stamp {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px double #1e40af;
+      background: rgba(30, 64, 175, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       font-weight: 800;
-      font-size: 1.2rem;
+      color: #1e3a8a;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      transform: rotate(-6deg);
-      display: inline-block;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       font-family: monospace;
-      letter-spacing: 2px;
+      backdrop-filter: blur(1px);
     }
-    .signature-area {
+    .rounded-stamp span:first-child {
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    .rounded-stamp span:last-child {
+      font-size: 0.65rem;
+      border-top: 1px solid #2563eb;
+      margin-top: 5px;
+      padding-top: 3px;
+    }
+    .signature-block {
       text-align: right;
-      border-top: 2px dashed #334155;
-      width: 220px;
+      border-top: 2px dashed #4b5563;
+      min-width: 180px;
       padding-top: 8px;
-      font-weight: 500;
-    }
-
-    /* MISC */
-    .total-line {
-      font-weight: bold;
-      background: #fef9e3;
-      text-align: right;
+      font-weight: 600;
     }
     .word-amount {
-      background: #f1f5f9;
-      padding: 10px;
-      border-radius: 14px;
+      background: #eef2ff;
+      padding: 8px 14px;
+      border-radius: 28px;
       margin: 15px 0;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .total-row {
+      background: #fef9e3;
+      font-weight: 800;
+    }
+    .gst-break {
+      font-size: 0.8rem;
+    }
+
+    /* responsive fixes */
+    @media (max-width: 640px) {
+      .tab-pane {
+        padding: 18px 14px;
+      }
+      .invoice-preview {
+        padding: 14px;
+      }
+      .rounded-stamp {
+        width: 85px;
+        height: 85px;
+        font-size: 0.65rem;
+      }
     }
   </style>
 </head>
 <body>
-<div class="app-wrapper">
+<div class="app-container">
   <div class="tabs">
-    <button class="tab-btn active" data-tab="create">➕ Create Invoice</button>
-    <button class="tab-btn" data-tab="view">🔍 View / Share Past Invoice</button>
+    <button class="tab-btn active" data-tab="create">📝 Create Invoice</button>
+    <button class="tab-btn" data-tab="view">🔍 Retrieve Invoice</button>
   </div>
 
-  <!-- CREATE INVOICE TAB -->
+  <!-- CREATE INVOICE PANEL -->
   <div id="createTab" class="tab-pane active-pane">
-    <h2>📄 AV TECHNOLOGY – TAX INVOICE</h2>
     <div class="form-grid">
-      <div class="input-field"><label>M/S (Customer Name) *</label><input type="text" id="customerName" placeholder="M/s ABC Traders"></div>
-      <div class="input-field"><label>Customer GSTIN</label><input type="text" id="custGstin" placeholder="07XXXXXX"></div>
-      <div class="input-field"><label>State Code *</label><input type="text" id="stateCode" placeholder="07 for Delhi" value="07"></div>
-      <div class="input-field"><label>Vehicle No.</label><input type="text" id="vehicleNo" placeholder="DL 01 AB 1234"></div>
-      <div class="input-field"><label>Date of Delivery</label><input type="date" id="deliveryDate"></div>
-      <div class="input-field"><label>Place of Supply</label><input type="text" id="placeSupply" placeholder="New Delhi"></div>
-      <div class="input-field"><label>Transport Mode</label><input type="text" id="transportMode" placeholder="Road / Van"></div>
-      <div class="input-field"><label>Cheque No.</label><input type="text" id="chequeNo"></div>
-      <div class="input-field"><label>Bank & Branch</label><input type="text" id="bankBranch" placeholder="Bank / Branch"></div>
-      <div class="input-field"><label>Cartage (Labour & Others) ₹</label><input type="number" id="cartage" value="0" step="1"></div>
+      <div class="field"><label>Invoice No. (Manual / Auto)</label><input type="text" id="invoiceNoManual" placeholder="INV-2025-001" value=""></div>
+      <div class="field"><label>Customer Name (M/S) *</label><input type="text" id="customerName" placeholder="M/s Sharma Enterprises"></div>
+      <div class="field"><label>Customer GSTIN</label><input type="text" id="custGstin" placeholder="07ABCFG1234F1Z"></div>
+      <div class="field"><label>State Name (auto code)</label><input type="text" id="stateName" placeholder="Delhi" value="Delhi"></div>
+      <div class="field"><label>State Code</label><input type="text" id="stateCode" placeholder="07" readonly style="background:#f1f5f9;"></div>
+      <div class="field"><label>Vehicle No.</label><input type="text" id="vehicleNo" placeholder="DL 01 AB 5678"></div>
+      <div class="field"><label>Date of Delivery</label><input type="date" id="deliveryDate"></div>
+      <div class="field"><label>Place of Supply</label><input type="text" id="placeSupply" placeholder="New Delhi"></div>
+      <div class="field"><label>Transport Mode</label><input type="text" id="transportMode" placeholder="Road / Van"></div>
+      <div class="field"><label>Cheque No.</label><input type="text" id="chequeNo"></div>
+      <div class="field"><label>Bank & Branch</label><input type="text" id="bankBranch" placeholder="SBI, Main Branch"></div>
+      <div class="field"><label>Cartage (₹) Labour & others</label><input type="number" id="cartage" value="0" step="1"></div>
     </div>
 
-    <h3>🛒 Invoice Items (S.No, Particulars, HSN, Qty, Rate)</h3>
-    <table class="items-table" id="itemsTable">
-      <thead>
-        <tr><th>S.No</th><th>PARTICULARS</th><th>HSN CODE</th><th>QTY</th><th>RATE (₹)</th><th>AMOUNT (₹)</th><th></th></tr>
-      </thead>
-      <tbody id="itemsBody"></tbody>
-    </table>
-    <button type="button" class="add-row-btn" id="addRowBtn">+ Add New Item</button>
+    <label style="font-weight:800; margin-bottom:6px; display:block;">📦 Invoice Items</label>
+    <div class="items-wrapper">
+      <table class="items-table" id="itemsTable">
+        <thead><tr><th>S.No</th><th>PARTICULARS</th><th>HSN CODE</th><th>QTY</th><th>RATE (₹)</th><th>AMOUNT (₹)</th><th></th></tr></thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+    <button type="button" class="add-row-btn" id="addRowBtn">+ Add Product / Service</button>
 
     <div class="action-buttons">
       <button class="btn-primary" id="generateInvoiceBtn">💾 Generate & Save Invoice</button>
-      <button class="btn-secondary" id="resetFormBtn">⟳ Reset Form</button>
+      <button class="btn-primary btn-secondary" id="resetFormBtn">⟳ Reset Fields</button>
     </div>
 
-    <!-- LIVE INVOICE PREVIEW -->
+    <!-- PREVIEW AREA (A4 Professional Invoice) -->
     <div id="invoicePreview" class="invoice-preview" style="display: none;"></div>
   </div>
 
-  <!-- VIEW PAST INVOICE TAB -->
+  <!-- VIEW INVOICE TAB -->
   <div id="viewTab" class="tab-pane">
-    <h2>🔎 Retrieve Invoice</h2>
     <div class="form-grid">
-      <div class="input-field"><label>Enter Invoice Number</label><input type="text" id="searchInvNo" placeholder="e.g., INV-1744287600000"></div>
+      <div class="field"><label>Enter Invoice Number</label><input type="text" id="searchInvNo" placeholder="e.g., INV-1744287600000"></div>
     </div>
-    <button class="btn-primary" id="fetchInvoiceBtn">Load Invoice</button>
+    <button class="btn-primary" id="fetchInvoiceBtn">🔎 Load Invoice</button>
     <div id="pastInvoiceContainer" style="margin-top: 30px;"></div>
   </div>
 </div>
 
 <script>
-  // ======================== CONFIGURATION ===========================
-  // 🔁 REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+  // ------------------------- CONFIGURATION -------------------------
+  // 🔁 REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL (see instructions)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_REPLACE_ME/exec"; 
-  // -----------------------------------------------------------------
-  // For testing without backend, set USE_MOCK = true (data stays in browser)
-  const USE_MOCK = false;  // Set to false once you deploy Apps Script
+  const USE_MOCK = false;   // set to false after deploying Apps Script
 
-  let itemsRowCount = 1;
-
-  // Helper: Convert amount to Indian Rupees words
+  // Helper: Number to Indian Rupees words (accurate)
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -337,14 +413,15 @@
     return result + " Only";
   }
 
-  // Render items table rows
+  // Items management
+  let itemsRowCount = 1;
   function renderItemRows() {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
     for (let i = 0; i < itemsRowCount; i++) {
       const row = tbody.insertRow();
       row.insertCell(0).innerText = i+1;
-      row.insertCell(1).innerHTML = `<input type="text" id="item_${i}_desc" placeholder="Product / Service">`;
+      row.insertCell(1).innerHTML = `<input type="text" id="item_${i}_desc" placeholder="Product / Service" style="min-width:110px;">`;
       row.insertCell(2).innerHTML = `<input type="text" id="item_${i}_hsn" placeholder="HSN">`;
       row.insertCell(3).innerHTML = `<input type="number" id="item_${i}_qty" value="1" step="1" min="0">`;
       row.insertCell(4).innerHTML = `<input type="number" id="item_${i}_rate" value="0" step="1" min="0">`;
@@ -365,7 +442,7 @@
     if (itemsRowCount <= 1) return;
     itemsRowCount--;
     renderItemRows();
-    calcTaxableAndPreview();
+    triggerPreviewUpdate();
   }
 
   function attachItemEvents() {
@@ -378,12 +455,12 @@
   }
 
   function updateItemAmount(idx) {
-    const qty = parseFloat(document.getElementById(`item_${i}_qty`)?.value) || 0;
-    const rate = parseFloat(document.getElementById(`item_${i}_rate`)?.value) || 0;
+    const qty = parseFloat(document.getElementById(`item_${idx}_qty`)?.value) || 0;
+    const rate = parseFloat(document.getElementById(`item_${idx}_rate`)?.value) || 0;
     const amt = qty * rate;
     const span = document.getElementById(`item_${idx}_amount`);
     if (span) span.innerText = amt.toFixed(2);
-    calcTaxableAndPreview();
+    triggerPreviewUpdate();
   }
 
   function getItemsArray() {
@@ -399,115 +476,156 @@
     return items;
   }
 
-  function calcTaxableAndPreview() {
-    let items = getItemsArray();
-    let taxable = items.reduce((sum, it) => sum + parseFloat(it.amount), 0);
-    let state = document.getElementById('stateCode').value.trim();
-    let isDelhi = (state === "07");
-    let cgst = 0, sgst = 0, igst = 0;
-    if (isDelhi) {
-      cgst = taxable * 0.09;
-      sgst = taxable * 0.09;
+  // Auto state code based on state name
+  function updateStateCode() {
+    const stateName = document.getElementById('stateName').value.trim().toLowerCase();
+    const stateCodeField = document.getElementById('stateCode');
+    if (stateName.includes('delhi')) {
+      stateCodeField.value = '07';
     } else {
-      igst = taxable * 0.18;
+      stateCodeField.value = ''; 
     }
-    let cartage = parseFloat(document.getElementById('cartage').value) || 0;
-    let grandTotal = taxable + cgst + sgst + igst + cartage;
-    document.getElementById('taxablePreview')?.remove();
-    return { taxable, cgst, sgst, igst, grandTotal, isDelhi };
+    triggerPreviewUpdate();
   }
 
-  function buildInvoiceHTML(invoiceData) {
-    const items = invoiceData.items;
-    const taxable = invoiceData.taxable;
-    const cgst = invoiceData.cgst, sgst = invoiceData.sgst, igst = invoiceData.igst;
-    const grand = invoiceData.grandTotal;
-    const isDelhi = invoiceData.isDelhi;
-    const cartage = invoiceData.cartage;
-    const words = numberToWords(grand);
-    let gstBreakdown = isDelhi ? `<tr><td>CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr><tr><td>SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>` : `<tr><td>IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
+  let previewTimeout;
+  function triggerPreviewUpdate() {
+    if (previewTimeout) clearTimeout(previewTimeout);
+    previewTimeout = setTimeout(() => {
+      const previewDiv = document.getElementById('invoicePreview');
+      if (previewDiv.style.display === 'block') {
+        generateInvoicePreviewOnly();
+      }
+    }, 300);
+  }
+
+  function generateInvoicePreviewOnly() {
+    const invoiceData = collectInvoiceData();
+    if (!invoiceData) return;
+    const html = buildInvoiceHTML(invoiceData);
+    const previewDiv = document.getElementById('invoicePreview');
+    previewDiv.innerHTML = html;
+    previewDiv.style.display = 'block';
+  }
+
+  function collectInvoiceData() {
+    const customerName = document.getElementById('customerName').value.trim();
+    if (!customerName) return null;
+    const items = getItemsArray().filter(it => it.desc.trim() !== "");
+    if (items.length === 0) return null;
+    const taxable = items.reduce((s,i)=> s+parseFloat(i.amount),0);
+    let stateCodeRaw = document.getElementById('stateCode').value.trim();
+    const isDelhi = (stateCodeRaw === "07");
+    let cgst=0, sgst=0, igst=0;
+    if(isDelhi){ cgst = taxable*0.09; sgst = taxable*0.09; } 
+    else { igst = taxable*0.18; }
+    const cartage = parseFloat(document.getElementById('cartage').value) || 0;
+    const grandTotal = taxable + cgst + sgst + igst + cartage;
+    let invoiceNo = document.getElementById('invoiceNoManual').value.trim();
+    if (invoiceNo === "") invoiceNo = "INV-" + Date.now();
+    const today = new Date().toLocaleDateString('en-IN');
+    return {
+      invoiceNo, invoiceDate: today, customerName, custGstin: document.getElementById('custGstin').value,
+      stateCode: stateCodeRaw, stateName: document.getElementById('stateName').value,
+      vehicleNo: document.getElementById('vehicleNo').value, deliveryDate: document.getElementById('deliveryDate').value,
+      placeSupply: document.getElementById('placeSupply').value, transportMode: document.getElementById('transportMode').value,
+      chequeNo: document.getElementById('chequeNo').value, bankBranch: document.getElementById('bankBranch').value,
+      cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items
+    };
+  }
+
+  function buildInvoiceHTML(inv) {
+    const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
+    const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
       itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
     });
+    let gstBreakdown = '';
+    if (isDelhi) {
+      gstBreakdown = `<tr><td class="gst-break">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
+                      <tr><td class="gst-break">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+    } else {
+      gstBreakdown = `<tr><td class="gst-break">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
+    }
     return `
-      <div style="font-family: monospace, 'Segoe UI'; font-size: 13px; max-width: 100%; overflow-x: auto;">
-        <div style="text-align:center"><h2>TAX INVOICE</h2></div>
-        <div style="display:flex; justify-content:space-between;"><span><b>GSTIN: 07ABIFA3151F1ZS</b></span><span><b>STATE CODE-07</b></span></div>
-        <div style="text-align:center; margin:8px 0"><b>AV TECHNOLOGY</b><br>DEALS IN : PROJECTORS .VIDIO CAMERA & OUTDOOR INDOOR LED VIDIO WALLS ,SPARE PARTS<br>20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>MOB;+91 9711166056 .E mail :avtechnologyy@gmail.com</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;"><div><b>M/S :</b> ${invoiceData.customerName}</div><div><b>INVOICE NO :</b> ${invoiceData.invoiceNo}</div>
-        <div><b>GSTIN NO:</b> ${invoiceData.custGstin}</div><div><b>INVOICE DATE :</b> ${invoiceData.invoiceDate}</div>
-        <div><b>VEHICLE NO :</b> ${invoiceData.vehicleNo}</div><div><b>DATE OF DELIVERY :</b> ${invoiceData.deliveryDate}</div>
-        <div><b>PLACE OF SUPPLY :</b> ${invoiceData.placeSupply}</div><div><b>TRANSPORT MODE :</b> ${invoiceData.transportMode}</div>
-        <div><b>STATE CODE :</b> ${invoiceData.stateCode}</div><div><b>CHEQUE / BANK :</b> ${invoiceData.chequeNo} / ${invoiceData.bankBranch}</div></div>
-        <table style="width:100%; border-collapse:collapse; margin:15px 0;" border="1"><thead><tr><th>S NO</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
-        <div style="text-align:right"><b>TAXABLE VALUE : ₹ ${taxable.toFixed(2)}</b></div>
-        <div class="word-amount"><b>AMOUNT IN WORDS :</b> ${words}</div>
-        <table style="width:100%; margin:10px 0;"><tr><td>${gstBreakdown}</td><td><b>CARTAGE : ₹ ${cartage.toFixed(2)}</b></td></tr><tr class="total-line"><td colspan="2"><b>TOTAL SALE VALUE WITH GST : ₹ ${grand.toFixed(2)}</b></td></tr></table>
-        <div><b>TERMS & CONDITIONS :</b><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICITION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
-        <div class="stamp-sign"><div class="blue-stamp">🔹 AV TECHNOLOGY 🔹<br>DELHI</div><div class="signature-area"><br>FOR AV TECHNOLOGY<br><span style="border-top:1px solid #000; display:inline-block; width:160px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>AUTHORISED SIGNATORY</div></div>
-        <div style="font-size:10px; text-align:center;">E.& O. E.</div>
+      <div style="font-family:'Segoe UI',Roboto,sans-serif; max-width:100%;">
+        <div class="brand-header">
+          <div class="brand-name">✦ AV TECHNOLOGY ✦</div>
+          <div class="brand-tag">PROJECTORS | VIDEO CAMERA | LED VIDEO WALLS | SPARE PARTS</div>
+          <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>📞 +91 9711166056  ✉ avtechnologyy@gmail.com</div>
+        </div>
+        <div class="invoice-meta">
+          <span><strong>GSTIN:</strong> 07ABIFA3151F1ZS</span>
+          <span><strong>STATE CODE:</strong> 07</span>
+          <span><strong>INVOICE NO:</strong> ${invoiceNo}</span>
+          <span><strong>DATE:</strong> ${invoiceDate}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; background:#fafcff; padding:12px; border-radius:20px; margin-bottom:14px;">
+          <div><strong>M/S:</strong> ${customerName}<br><strong>GSTIN NO:</strong> ${custGstin || '—'}<br><strong>State:</strong> ${stateName} (Code:${stateCode})</div>
+          <div><strong>VEHICLE NO:</strong> ${vehicleNo || '—'}<br><strong>DELIVERY DATE:</strong> ${deliveryDate || '—'}<br><strong>PLACE OF SUPPLY:</strong> ${placeSupply || '—'}<br><strong>TRANSPORT MODE:</strong> ${transportMode || '—'}</div>
+        </div>
+        <div class="items-wrapper" style="border:none; margin:0 0 12px 0;"><table class="items-table" style="min-width:500px;"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table></div>
+        <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
+        <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
+        <table style="width:100%; margin:10px 0; border-collapse:collapse;">${gstBreakdown}<tr><td><strong>CARTAGE (Labour & others)</strong></td><td>₹ ${cartage.toFixed(2)}</td></tr><tr class="total-row"><td><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
+        <div style="font-size:0.7rem; margin:12px 0; background:#fef7e0; padding:8px; border-radius:16px;"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
+        <div class="stamp-sign-area">
+          <div class="rounded-stamp">
+            <span>🔹 AV TECHNOLOGY 🔹</span>
+            <span>DELHI • APPROVED</span>
+          </div>
+          <div class="signature-block">
+            FOR AV TECHNOLOGY<br>
+            <span style="border-top:2px solid #1f2937; display:inline-block; width:160px; margin-top:6px;"></span><br>
+            AUTHORISED SIGNATORY
+          </div>
+        </div>
+        <div style="text-align:center; font-size:9px; margin-top:15px;">E. & O. E.</div>
       </div>`;
   }
 
-  async function generateAndSave() {
-    const customerName = document.getElementById('customerName').value.trim();
-    if (!customerName) { alert("Please enter M/S (Customer Name)"); return; }
-    const items = getItemsArray().filter(it => it.desc.trim() !== "");
-    if (items.length === 0) { alert("Add at least one item with description"); return; }
-    const taxable = items.reduce((s,i)=> s+parseFloat(i.amount),0);
-    const stateCode = document.getElementById('stateCode').value.trim();
-    const isDelhi = (stateCode === "07");
-    let cgst=0,sgst=0,igst=0;
-    if(isDelhi){ cgst = taxable*0.09; sgst = taxable*0.09; } else { igst = taxable*0.18; }
-    const cartage = parseFloat(document.getElementById('cartage').value) || 0;
-    const grandTotal = taxable + cgst + sgst + igst + cartage;
-    const invoiceNo = "INV-" + Date.now();
-    const today = new Date().toLocaleDateString('en-IN');
-    const invoiceData = {
-      invoiceNo, invoiceDate: today, customerName, custGstin: document.getElementById('custGstin').value,
-      stateCode, vehicleNo: document.getElementById('vehicleNo').value, deliveryDate: document.getElementById('deliveryDate').value,
-      placeSupply: document.getElementById('placeSupply').value, transportMode: document.getElementById('transportMode').value,
-      chequeNo: document.getElementById('chequeNo').value, bankBranch: document.getElementById('bankBranch').value,
-      cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items: items
-    };
-    const htmlInvoice = buildInvoiceHTML(invoiceData);
+  async function saveAndGenerate() {
+    const invoiceData = collectInvoiceData();
+    if (!invoiceData) { alert("❌ Please fill Customer Name and at least one product item."); return; }
+    const finalHtml = buildInvoiceHTML(invoiceData);
     const previewDiv = document.getElementById('invoicePreview');
-    previewDiv.innerHTML = htmlInvoice;
+    previewDiv.innerHTML = finalHtml;
     previewDiv.style.display = 'block';
-    // STORE to sheet
+    // Cloud storage
     if (!USE_MOCK && SCRIPT_URL.includes("REPLACE_ME")) {
-      alert("⚠️ Please replace SCRIPT_URL with your Google Apps Script URL (see instructions below). Invoice not saved to cloud.\n\nBut you can still print / share this preview.");
+      alert("⚠️ Google Apps Script URL not configured. Invoice preview ready but NOT saved to cloud. (replace SCRIPT_URL)");
     } else if (!USE_MOCK) {
       try {
-        let response = await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) });
-        alert("✅ Invoice saved to Google Sheet!\nNumber: "+invoiceNo);
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) });
+        alert(`✅ Invoice ${invoiceData.invoiceNo} saved to Google Sheet!`);
       } catch(e) { alert("Cloud save failed, but invoice is ready. "+e.message); }
     } else {
-      localStorage.setItem(invoiceNo, JSON.stringify(invoiceData));
-      alert(`📌 Mock save: Invoice ${invoiceNo} stored locally.`);
+      localStorage.setItem(invoiceData.invoiceNo, JSON.stringify(invoiceData));
+      alert(`📌 Demo save: ${invoiceData.invoiceNo} stored locally.`);
     }
-    window.open(`https://wa.me/?text=🧾 AV TECHNOLOGY Invoice ${invoiceNo} Total: ₹${grandTotal.toFixed(2)}`, '_blank');
+    window.open(`https://wa.me/?text=🧾 *AV TECHNOLOGY INVOICE*%0ANo: ${invoiceData.invoiceNo}%0ATotal: ₹${invoiceData.grandTotal.toFixed(2)}%0ACustomer: ${invoiceData.customerName}`, '_blank');
   }
 
-  document.getElementById('addRowBtn').addEventListener('click', () => { itemsRowCount++; renderItemRows(); calcTaxableAndPreview(); });
-  document.getElementById('generateInvoiceBtn').addEventListener('click', generateAndSave);
+  // Event listeners
+  document.getElementById('addRowBtn').addEventListener('click', () => { itemsRowCount++; renderItemRows(); triggerPreviewUpdate(); });
+  document.getElementById('generateInvoiceBtn').addEventListener('click', saveAndGenerate);
   document.getElementById('resetFormBtn').addEventListener('click', () => { location.reload(); });
+  document.getElementById('stateName').addEventListener('input', updateStateCode);
   document.getElementById('fetchInvoiceBtn').addEventListener('click', async () => {
     const invNo = document.getElementById('searchInvNo').value.trim();
-    if(!invNo) return alert("Enter invoice number");
+    if(!invNo) return alert("Enter Invoice Number");
     if(!USE_MOCK && !SCRIPT_URL.includes("REPLACE_ME")) {
-      alert("To fetch from sheet, implement doGet in Apps Script. For demo, use mock mode.");
-    } else if(USE_MOCK) {
-      let data = localStorage.getItem(invNo);
-      if(data) { document.getElementById('pastInvoiceContainer').innerHTML = buildInvoiceHTML(JSON.parse(data)); }
-      else { document.getElementById('pastInvoiceContainer').innerHTML = "<p>Not found locally</p>"; }
+      alert("For full fetch, implement doGet in Apps Script. Use mock mode for demo.");
+    } else if(USE_MOCK){
+      const data = localStorage.getItem(invNo);
+      if(data) document.getElementById('pastInvoiceContainer').innerHTML = buildInvoiceHTML(JSON.parse(data));
+      else document.getElementById('pastInvoiceContainer').innerHTML = "<p style='color:red;'>❌ Invoice not found locally</p>";
     } else {
-      alert("Please configure Apps Script GET method or use mock.");
+      alert("Configure GET endpoint or enable mock.");
     }
   });
 
-  renderItemRows();
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -518,24 +636,25 @@
       else document.getElementById('viewTab').classList.add('active-pane');
     });
   });
+  renderItemRows();
+  updateStateCode();
+  // Set default delivery date = today
+  const todayDate = new Date().toISOString().split('T')[0];
+  document.getElementById('deliveryDate').value = todayDate;
+  document.getElementById('placeSupply').value = "Delhi";
 </script>
 
-<!-- ========== GOOGLE APPS SCRIPT CODE (Copy & Deploy) ========== -->
 <!-- 
-  Save this as a new Google Apps Script project, deploy as Web App (execute as "Me", access "Anyone").
-  Replace the SCRIPT_URL above with your deployment URL.
-
+  🧰 GOOGLE APPS SCRIPT BACKEND (copy to script.google.com)
+  ---------------------------------------------------------
   function doPost(e) {
-    var data = JSON.parse(e.postData.contents);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    sheet.appendRow([data.invoiceNo, data.invoiceDate, data.customerName, data.grandTotal, JSON.stringify(data.items)]);
-    return ContentService.createTextOutput("OK");
+    const data = JSON.parse(e.postData.contents);
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    sheet.appendRow([data.invoiceNo, data.invoiceDate, data.customerName, data.custGstin, data.grandTotal, data.taxable, data.cgst, data.sgst, data.igst, JSON.stringify(data.items), new Date()]);
+    return ContentService.createTextOutput("Saved");
   }
-  function doGet(e) {
-    var inv = e.parameter.invoiceNo;
-    // implement search logic
-    return ContentService.createTextOutput("GET endpoint ready");
-  }
+  function doGet(e) { return ContentService.createTextOutput("OK"); }
+  👉 Deploy as Web App (Execute as "Me", Access "Anyone") → replace SCRIPT_URL
 -->
 </body>
 </html>
