@@ -4,76 +4,159 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AV Technology Invoice</title>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
-body { font-family: Arial; padding: 20px; }
-input { width: 100%; padding: 10px; margin: 5px 0; }
-button { padding: 10px; width: 100%; background: green; color: white; }
+body { font-family: Arial; padding: 10px; }
+input { padding: 5px; margin: 3px; }
+table { width: 100%; border-collapse: collapse; }
+td, th { border: 1px solid black; padding: 5px; font-size: 12px; }
+.center { text-align: center; }
+.right { text-align: right; }
+h2 { text-align: center; }
+button { padding: 10px; margin: 10px 0; width: 100%; background: green; color: white; }
 </style>
 </head>
 
 <body>
 
-<h2>AV Technology Billing</h2>
+<h2>TAX INVOICE</h2>
 
-<input id="party" placeholder="Party Name">
-<input id="gstin" placeholder="GSTIN">
-<input id="state" placeholder="State Code (07 for Delhi)">
-<input id="amount" placeholder="Amount">
+<div id="invoice">
 
-<button onclick="save()">Generate Invoice</button>
+<b>GSTIN:</b> 07ABIFA3151F1ZS &nbsp;&nbsp;&nbsp;
+<b>STATE CODE:</b> 07
+
+<h3 class="center">AV TECHNOLOGY</h3>
+
+<p><b>Deals In:</b> Projectors, Video Camera, LED Walls, Spare Parts</p>
+<p>20 Part 2 Sainik Vihar Mohan Garden Uttam Nagar New Delhi -59</p>
+<p>Mob: +91 9711166056 | Email: avtechnologyy@gmail.com</p>
+
+<hr>
+
+Party: <input id="party"><br>
+GSTIN: <input id="gstin"><br>
+State Code: <input id="state" value="07"><br>
+
+<table id="items">
+<tr>
+<th>S No</th>
+<th>Particular</th>
+<th>HSN</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+</table>
+
+<button onclick="addRow()">+ Add Item</button>
+
+<br>
+
+Taxable Value: ₹ <span id="taxable">0</span><br>
+CGST: ₹ <span id="cgst">0</span><br>
+SGST: ₹ <span id="sgst">0</span><br>
+IGST: ₹ <span id="igst">0</span><br>
+
+<h3>Total: ₹ <span id="total">0</span></h3>
+
+<p><b>Amount in Words:</b> <span id="words"></span></p>
+
+<br>
+
+<div style="display:flex; justify-content:space-between;">
+<div>
+<img src="https://i.ibb.co/7QpKsCX/stamp.png" width="120"><br>
+Stamp
+</div>
+
+<div>
+<br><br><br>
+Signature
+</div>
+</div>
+
+</div>
+
+<button onclick="generatePDF()">Download PDF</button>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzsICmotSD7-sFmi0K4lc3MDYTXU9gKHHsoc6aevf9LimKTJPyfSqhZKEMB0r3jTyHG/exec";
 
-// simple login
-const allowed = ["sahilmotors7@gmail.com","avtechnologyy@gmail.com"];
-const email = prompt("Enter your email");
+let rowCount = 0;
 
-if(!allowed.includes(email)){
-  document.body.innerHTML = "Access Denied";
+function addRow(){
+  rowCount++;
+  let table = document.getElementById("items");
+
+  let row = table.insertRow();
+
+  row.innerHTML = `
+  <td>${rowCount}</td>
+  <td><input oninput="calc()"></td>
+  <td><input></td>
+  <td><input type="number" oninput="calc()"></td>
+  <td><input type="number" oninput="calc()"></td>
+  <td class="amt">0</td>
+  `;
 }
 
-// GST calculation
-function save(){
+function calc(){
+  let rows = document.querySelectorAll("#items tr");
+  let total = 0;
 
-  let amount = parseFloat(document.getElementById("amount").value);
+  rows.forEach((r,i)=>{
+    if(i===0) return;
+
+    let qty = r.cells[3].children[0].value || 0;
+    let rate = r.cells[4].children[0].value || 0;
+
+    let amt = qty * rate;
+    r.cells[5].innerText = amt;
+
+    total += amt;
+  });
+
+  document.getElementById("taxable").innerText = total;
+
   let state = document.getElementById("state").value;
 
   let cgst=0, sgst=0, igst=0;
 
   if(state == "07"){
-    cgst = amount * 0.09;
-    sgst = amount * 0.09;
+    cgst = total * 0.09;
+    sgst = total * 0.09;
   } else {
-    igst = amount * 0.18;
+    igst = total * 0.18;
   }
 
-  let total = amount + cgst + sgst + igst;
+  let final = total + cgst + sgst + igst;
 
-  const data = {
-    invoiceNo: "INV-" + Date.now(),
-    date: new Date().toLocaleDateString(),
-    party: document.getElementById("party").value,
-    gstin: document.getElementById("gstin").value,
-    state: state,
-    amount: amount,
-    cgst: cgst,
-    sgst: sgst,
-    igst: igst,
-    total: total
-  };
+  document.getElementById("cgst").innerText = cgst.toFixed(2);
+  document.getElementById("sgst").innerText = sgst.toFixed(2);
+  document.getElementById("igst").innerText = igst.toFixed(2);
+  document.getElementById("total").innerText = final.toFixed(2);
 
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(data)
-  })
-  .then(res => res.text())
-  .then(() => {
-    alert("Invoice Saved Successfully");
-    window.open("https://wa.me/?text=Invoice Amount: ₹"+total);
-  });
-
+  document.getElementById("words").innerText = numberToWords(final);
 }
+
+function numberToWords(num){
+  return num + " Rupees Only";
+}
+
+async function generatePDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  await doc.html(document.getElementById("invoice"), {
+    callback: function (doc) {
+      doc.save("invoice.pdf");
+    },
+    x: 5,
+    y: 5
+  });
+}
+
 </script>
 
 </body>
