@@ -147,7 +147,7 @@
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, #previewActionButtons, .invoice-list, .no-print {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, #previewActionButtons, .invoice-list, .no-print, .print-button-container {
         display: none !important;
       }
       .invoice-preview { margin: 0; padding: 0.15in; box-shadow: none; border: none; }
@@ -253,19 +253,24 @@
     .total-row { background: #fef9e3; font-weight: 800; }
     .stamp-sign-wrapper {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
+      justify-content: center;
+      align-items: center;
       flex-wrap: wrap;
       margin-top: 35px;
-      gap: 25px;
+      gap: 30px;
       border-top: 1px solid #e2e8f0;
       padding-top: 20px;
+    }
+    /* Stamp container - centred */
+    .stamp-container {
+      text-align: center;
     }
     .stamp-svg {
       width: 95px;
       height: 95px;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
       opacity: 0.92;
+      display: inline-block;
     }
     .signature-box {
       text-align: right;
@@ -322,12 +327,9 @@
       border-radius: 40px;
       border: 1px solid #cbdbe6;
     }
-    /* Compact mode for many items – ensures single page */
-    @media print {
-      .items-table-preview td, .items-table-preview th { padding: 4px 3px; font-size: 0.7rem; }
-      .info-row { margin-bottom: 6px; font-size: 0.75rem; }
-      .brand-name { font-size: 1.5rem; }
-      .stamp-svg { width: 75px; height: 75px; }
+    .print-button-container {
+      margin-top: 20px;
+      text-align: center;
     }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
@@ -519,7 +521,7 @@
     };
   }
 
-  // Build invoice HTML - NO NonNullList, NO stray text
+  // Build invoice HTML - NO NonNullList, NO stray text, stamp centred
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
@@ -543,14 +545,16 @@
     }
     const stampTransform = getRandomStampTransform();
     const stampSVG = `
-      <svg class="stamp-svg" viewBox="0 0 100 100" style="transform: ${stampTransform};">
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#1e3a8a" stroke-width="2.5" stroke-dasharray="3 2"/>
-        <circle cx="50" cy="50" r="42" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
-        <text x="50" y="42" text-anchor="middle" fill="#1e3a8a" font-size="9" font-weight="bold" font-family="monospace">AV TECHNOLOGY</text>
-        <text x="50" y="55" text-anchor="middle" fill="#1e3a8a" font-size="7" font-family="monospace">DELHI • APPROVED</text>
-        <line x1="25" y1="68" x2="75" y2="68" stroke="#1e3a8a" stroke-width="0.8"/>
-        <text x="50" y="78" text-anchor="middle" fill="#1e3a8a" font-size="6" font-family="monospace">AUTHORISED</text>
-      </svg>
+      <div class="stamp-container">
+        <svg class="stamp-svg" viewBox="0 0 100 100" style="transform: ${stampTransform};">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#1e3a8a" stroke-width="2.5" stroke-dasharray="3 2"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
+          <text x="50" y="42" text-anchor="middle" fill="#1e3a8a" font-size="9" font-weight="bold" font-family="monospace">AV TECHNOLOGY</text>
+          <text x="50" y="55" text-anchor="middle" fill="#1e3a8a" font-size="7" font-family="monospace">DELHI • APPROVED</text>
+          <line x1="25" y1="68" x2="75" y2="68" stroke="#1e3a8a" stroke-width="0.8"/>
+          <text x="50" y="78" text-anchor="middle" fill="#1e3a8a" font-size="6" font-family="monospace">AUTHORISED</text>
+        </svg>
+      </div>
     `;
     return `
       <div style="font-family:'Segoe UI',Roboto,sans-serif;" id="invoiceContent">
@@ -579,13 +583,13 @@
             <div class="info-row"><span class="info-label">Bank/Branch:</span><span class="info-value">${bankBranch || '—'}</span></div>
           </div>
         </div>
-        <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
+        <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody>追赶
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
         <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
         <div class="terms"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
         <div class="stamp-sign-wrapper">
-          <div style="display:inline-block;">${stampSVG}</div>
+          ${stampSVG}
           <div class="signature-box">
             FOR AV TECHNOLOGY<br>
             <span style="border-top:2px dashed #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>
@@ -674,7 +678,13 @@
     const data = await res.json();
     if (data.error === "NOT_FOUND") { alert("Invoice not found"); return; }
     const html = buildInvoiceHTML(data);
-    document.getElementById('pastInvoiceContainer').innerHTML = html;
+    const container = document.getElementById('pastInvoiceContainer');
+    container.innerHTML = html;
+    // Add Print/PDF button below the viewed invoice
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'print-button-container';
+    btnDiv.innerHTML = '<button class="btn-print" onclick="window.printInvoice()">🖨️ Print / Save as PDF</button>';
+    container.appendChild(btnDiv);
   }
   async function printInvoiceFromList(invoiceNo) {
     const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
@@ -720,6 +730,9 @@
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) }).catch(e => console.error("Save error:", e));
     await setNextInvoiceNumber();
   }
+
+  // Global print function for dynamic buttons
+  window.printInvoice = printInvoice;
 
   // Initialization
   window.onload = async () => {
