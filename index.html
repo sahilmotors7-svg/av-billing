@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>AV TECHNOLOGY | Professional Tax Invoice</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -135,7 +134,6 @@
       border: none;
     }
     .btn-secondary { background: #4a5568; }
-    .btn-pdf { background: #c2410c; }
     .btn-print { background: #2c6e2c; }
     .invoice-preview {
       background: white;
@@ -145,10 +143,11 @@
       padding: 20px 24px;
       border: 1px solid #e9eef3;
     }
+    /* PRINT STYLES - perfect A4 PDF */
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-print, #previewActionButtons, .invoice-list, .no-print {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, #previewActionButtons, .invoice-list, .no-print {
         display: none !important;
       }
       .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; border: none; }
@@ -257,10 +256,11 @@
       border-top: 1px solid #e2e8f0;
       padding-top: 20px;
     }
-    .realistic-stamp-img {
+    /* SVG stamp - realistic, random tilt via inline style */
+    .stamp-svg {
       width: 95px;
-      height: auto;
-      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1)) blur(0.4px);
+      height: 95px;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
       opacity: 0.92;
     }
     .signature-box {
@@ -321,7 +321,7 @@
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
       .info-grid-pro { flex-direction: column; }
-      .realistic-stamp-img { width: 75px; }
+      .stamp-svg { width: 75px; height: 75px; }
     }
   </style>
 </head>
@@ -376,23 +376,21 @@
 
 <script>
   // ---------- CONFIGURATION ----------
-  // 👇 REPLACE WITH YOUR ACTUAL STAMP IMAGE URL (GitHub raw)
-  const STAMP_URL = "https://raw.githubusercontent.com/sahilmotors7-svg/av-billing/main/stamp.png";
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvvVq0C0FbyoyULkxk9LZZyMayWmNSc-mta2ksFrbnJ6e3qOyWOYoc6rFKCoCeKQQugA/exec";
   
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
   let allInvoices = [];
 
-  // Helper: random tilt, shift, scale for stamp
-  function getRandomStampStyle() {
-    const tilt = (Math.random() * 18) - 9; // -9 to +9 deg
-    const shiftX = (Math.random() * 10) - 5; // -5px to +5px
-    const shiftY = (Math.random() * 10) - 5;
-    const scale = 0.96 + (Math.random() * 0.08);
-    return `transform: rotate(${tilt}deg) translate(${shiftX}px, ${shiftY}px) scale(${scale});`;
+  // Helper: random tilt for stamp (different every time)
+  function getRandomStampTransform() {
+    const tilt = (Math.random() * 14) - 7; // -7deg to +7deg
+    const shiftX = (Math.random() * 8) - 4;
+    const shiftY = (Math.random() * 8) - 4;
+    const scale = 0.97 + (Math.random() * 0.06);
+    return `rotate(${tilt}deg) translate(${shiftX}px, ${shiftY}px) scale(${scale})`;
   }
 
-  // Number to Indian Rupees words
+  // Number to words (Indian Rupees)
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -420,7 +418,7 @@
     return result + " Only";
   }
 
-  // Items table rendering
+  // Render items table
   function renderItemsTable() {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
@@ -510,22 +508,34 @@
     };
   }
 
-  // BUILD INVOICE HTML - NO NonNullList garbage
+  // Generate full invoice HTML with inline SVG stamp (no external image)
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList></td><td>₹ ${it.amount}NonNullList<itemList></tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
-      gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+      gstBreakdown = `<tr><td style="text-align:left;">CGST @9%NonNullList<itemList></td><td>₹ ${cgst.toFixed(2)}NonNullList<itemList></tr>
+                      <tr><td style="text-align:left;">SGST @9%NonNullList<itemList></td><td>₹ ${sgst.toFixed(2)}NonNullList<itemList></tr>`;
     } else {
-      gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
+      gstBreakdown = `<tr><td style="text-align:left;">IGST @18%NonNullList<itemList></td><td>₹ ${igst.toFixed(2)}NonNullList<itemList></tr>`;
     }
-    const stampStyle = getRandomStampStyle();
+    // Random transform for stamp
+    const stampTransform = getRandomStampTransform();
+    // SVG stamp - realistic blue circular stamp with text
+    const stampSVG = `
+      <svg class="stamp-svg" viewBox="0 0 100 100" style="transform: ${stampTransform};">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#1e3a8a" stroke-width="2.5" stroke-dasharray="3 2"/>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text x="50" y="42" text-anchor="middle" fill="#1e3a8a" font-size="9" font-weight="bold" font-family="monospace">AV TECHNOLOGY</text>
+        <text x="50" y="55" text-anchor="middle" fill="#1e3a8a" font-size="7" font-family="monospace">DELHI • APPROVED</text>
+        <line x1="25" y1="68" x2="75" y2="68" stroke="#1e3a8a" stroke-width="0.8"/>
+        <text x="50" y="78" text-anchor="middle" fill="#1e3a8a" font-size="6" font-family="monospace">AUTHORISED</text>
+      </svg>
+    `;
     return `
       <div style="font-family:'Segoe UI',Roboto,sans-serif;" id="invoiceContent">
         <div style="text-align:center;"><div class="tax-invoice-title">TAX INVOICE</div></div>
@@ -556,12 +566,10 @@
         <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
-        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
+        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong>NonNullList<itemList></td><td><strong>₹ ${cartage.toFixed(2)}</strong>NonNullList<itemList></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong>NonNullList<itemList></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong>NonNullList<itemList></tr></table>
         <div class="terms"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
         <div class="stamp-sign-wrapper">
-          <div style="display:inline-block; ${stampStyle}">
-            <img src="${STAMP_URL}" class="realistic-stamp-img" alt="AV TECHNOLOGY STAMP" onerror="this.style.display='none'">
-          </div>
+          <div style="display:inline-block;">${stampSVG}</div>
           <div class="signature-box">
             FOR AV TECHNOLOGY<br>
             <span style="border-top:2px dashed #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>
@@ -572,7 +580,7 @@
       </div>`;
   }
 
-  // Auto increment invoice number
+  // Auto increment invoice number from sheet
   async function setNextInvoiceNumber() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getLast`);
@@ -601,53 +609,18 @@
     }
   }
 
-  // RELIABLE PDF DOWNLOAD (no blank page)
-  async function downloadPDF(elementId, filename) {
-    const element = document.getElementById(elementId);
+  // 100% reliable Print / Save as PDF (works on all devices)
+  function printInvoice() {
+    const element = document.getElementById('invoiceContent');
     if (!element) {
-      alert("No invoice to export. Please generate an invoice first.");
+      alert("No invoice to print. Please generate an invoice first.");
       return;
     }
-    // Wait for any pending rendering
-    await new Promise(r => setTimeout(r, 300));
-    // Clone the element to avoid page interference
-    const clone = element.cloneNode(true);
-    clone.style.display = 'block';
-    clone.style.position = 'absolute';
-    clone.style.top = '-9999px';
-    clone.style.left = '-9999px';
-    document.body.appendChild(clone);
-    const opt = {
-      margin: [0.2, 0.2, 0.2, 0.2],
-      filename: filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    try {
-      await html2pdf().set(opt).from(clone).save();
-    } catch(e) {
-      alert("PDF generation failed: " + e.message);
-    } finally {
-      document.body.removeChild(clone);
-    }
+    // Open print dialog - user can choose "Save as PDF"
+    window.print();
   }
 
-  // Print function
-  function printInvoice(elementId) {
-    const element = document.getElementById(elementId);
-    if (!element) { alert("No invoice to print."); return; }
-    const clone = element.cloneNode(true);
-    const styles = document.querySelector('style').innerHTML;
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html><head><title>AV TECHNOLOGY Invoice</title><style>${styles} body { margin: 0; padding: 0; } .no-print { display: none; }</style></head><body>${clone.outerHTML}</body></html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-  }
-
-  // Load last 10 invoices
+  // Load last 10 invoices from Google Sheet
   async function loadInvoiceList() {
     const container = document.getElementById('invoiceListContainer');
     container.innerHTML = "Loading invoices...";
@@ -673,8 +646,7 @@
             <div><strong>${inv.invoiceNo}</strong> | ${inv.customerName} | ₹ ${inv.grandTotal}</div>
             <div class="invoice-actions">
               <button onclick="viewInvoice('${inv.invoiceNo}')">👁️ View</button>
-              <button onclick="printInvoiceFromList('${inv.invoiceNo}')">🖨️ Print</button>
-              <button onclick="downloadPDFFromList('${inv.invoiceNo}')">📄 PDF</button>
+              <button onclick="printInvoiceFromList('${inv.invoiceNo}')">🖨️ Print / PDF</button>
             </div>
           </div>
         </div>`;
@@ -696,23 +668,13 @@
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = buildInvoiceHTML(data);
     const invoiceElem = tempDiv.firstChild;
-    const styles = document.querySelector('style').innerHTML;
+    // Create a temporary container for printing
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(`<html><head><title>Print Invoice</title><style>${styles} body { margin: 0; padding: 0; }</style></head><body>${invoiceElem.outerHTML}</body></html>`);
+    printWindow.document.write(`
+      <html><head><title>AV TECHNOLOGY Invoice</title><style>${document.querySelector('style').innerHTML} body { margin: 0; padding: 0; }</style></head><body>${invoiceElem.outerHTML}</body></html>
+    `);
     printWindow.document.close();
     printWindow.print();
-  }
-  async function downloadPDFFromList(invoiceNo) {
-    const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
-    const data = await res.json();
-    if (data.error === "NOT_FOUND") return;
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = buildInvoiceHTML(data);
-    const invoiceElem = tempDiv.firstChild;
-    invoiceElem.id = "tempInvoiceForPDF";
-    document.body.appendChild(invoiceElem);
-    await downloadPDF("tempInvoiceForPDF", `Invoice_${invoiceNo}.pdf`);
-    document.body.removeChild(invoiceElem);
   }
   function searchInvoices() {
     const query = document.getElementById('searchCustomerName').value.trim().toLowerCase();
@@ -737,14 +699,11 @@
       btnDiv.style.marginTop = '20px';
       btnDiv.style.display = 'flex';
       btnDiv.style.gap = '12px';
-      btnDiv.innerHTML = `
-        <button class="btn-print" id="printBtnMain">🖨️ Print Invoice</button>
-        <button class="btn-pdf" id="pdfDownloadMain">📄 Download PDF</button>
-      `;
+      btnDiv.innerHTML = `<button class="btn-print" id="printBtnMain">🖨️ Print / Save as PDF</button>`;
       previewDiv.appendChild(btnDiv);
-      document.getElementById('printBtnMain').addEventListener('click', () => printInvoice('invoiceContent'));
-      document.getElementById('pdfDownloadMain').addEventListener('click', () => downloadPDF('invoiceContent', `Invoice_${invoiceData.invoiceNo}.pdf`));
+      document.getElementById('printBtnMain').addEventListener('click', printInvoice);
     }
+    // Save to Google Sheet silently
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) }).catch(e => console.error("Save error:", e));
     await setNextInvoiceNumber();
   }
@@ -774,12 +733,10 @@
       else document.getElementById('viewTab').classList.add('active-pane');
     });
   });
-  // Expose global functions for inline buttons
+  // Expose global functions
   window.viewInvoice = viewInvoice;
   window.printInvoiceFromList = printInvoiceFromList;
-  window.downloadPDFFromList = downloadPDFFromList;
   window.printInvoice = printInvoice;
-  window.downloadPDF = downloadPDF;
 </script>
 </body>
 </html>
