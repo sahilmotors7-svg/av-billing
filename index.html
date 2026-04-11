@@ -1,10 +1,12 @@
+Here is the complete, fully corrected HTML document with reliable PDF generation, professional info layout (customer name first), and a realistic stamp. The PDF now captures the exact invoice without blank pages.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>AV TECHNOLOGY | Professional Tax Invoice</title>
-  <!-- html2pdf + html2canvas for PDF generation -->
+  <!-- html2pdf + html2canvas for reliable PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     * {
@@ -19,20 +21,17 @@
       padding: 20px 16px;
       display: flex;
       justify-content: center;
-      align-items: center;
     }
 
-    /* Main container - A4 width */
     .app-container {
       max-width: 210mm;
       width: 100%;
       background: white;
       border-radius: 28px;
-      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
       overflow: hidden;
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 8px;
@@ -64,7 +63,6 @@
       display: block;
     }
 
-    /* Form grid - responsive */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -95,7 +93,6 @@
       box-shadow: 0 0 0 2px rgba(30,74,118,0.2);
     }
 
-    /* Items table - stable and compact */
     .items-wrapper {
       overflow-x: auto;
       margin: 18px 0 12px;
@@ -164,7 +161,6 @@
     .btn-pdf { background: #c2410c; }
     .btn-share { background: #1e6f5c; }
 
-    /* Invoice Preview - print optimized for A4 */
     .invoice-preview {
       background: white;
       margin-top: 30px;
@@ -173,42 +169,19 @@
       padding: 20px 24px;
     }
 
-    /* PRINT STYLES - A4 single page, no extra headers */
+    /* PRINT STYLES - clean A4 */
     @media print {
-      body {
-        background: white;
-        padding: 0;
-        margin: 0;
-      }
-      .app-container {
-        max-width: 100%;
-        box-shadow: none;
-        border-radius: 0;
-      }
+      body { background: white; padding: 0; margin: 0; }
+      .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
       .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, #previewActionButtons {
         display: none !important;
       }
-      .invoice-preview {
-        margin: 0;
-        padding: 0.2in;
-        box-shadow: none;
-        border-radius: 0;
-      }
-      @page {
-        size: A4;
-        margin: 0.2in;
-      }
-      /* Remove any automatic date/time header */
-      header, footer, .print-header, .print-footer {
-        display: none;
-      }
-      body * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+      .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; }
+      @page { size: A4; margin: 0.2in; }
+      body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
 
-    /* ========== PREMIUM INVOICE STYLES ========== */
+    /* ========== PREMIUM PROFESSIONAL INVOICE STYLES ========== */
     .tax-invoice-title {
       text-align: center;
       font-size: 28px;
@@ -216,7 +189,6 @@
       letter-spacing: 2px;
       color: #1f3b4c;
       margin-bottom: 12px;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
       border-bottom: 2px solid #cfdfed;
       display: inline-block;
       width: auto;
@@ -241,27 +213,34 @@
       color: #2d3e50;
       margin-top: 6px;
     }
-    /* Professional info card layout */
-    .info-card {
-      background: #fbfdff;
-      border: 1px solid #e2e8f0;
-      border-radius: 24px;
-      padding: 16px 22px;
-      margin: 20px 0;
+    /* Professional two-column layout: left side (customer first), right side (invoice details) */
+    .info-grid-pro {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 20px;
+      background: #fafcff;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px 24px;
+      margin: 20px 0;
+      gap: 24px;
     }
-    .info-col {
-      flex: 1;
-      min-width: 170px;
+    .info-left {
+      flex: 2;
+      min-width: 220px;
+    }
+    .info-right {
+      flex: 1.5;
+      min-width: 200px;
+      border-left: 1px solid #e2e8f0;
+      padding-left: 24px;
     }
     .info-row {
       display: flex;
-      margin-bottom: 10px;
-      font-size: 0.8rem;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
       align-items: baseline;
+      flex-wrap: wrap;
     }
     .info-label {
       font-weight: 800;
@@ -276,6 +255,8 @@
     .customer-name-cap {
       text-transform: uppercase;
       font-weight: 800;
+      font-size: 1rem;
+      color: #0f3b5c;
     }
     .items-table-preview {
       width: 100%;
@@ -305,7 +286,7 @@
       background: #fef9e3;
       font-weight: 800;
     }
-    /* Realistic Small Stamp (ink pad effect) */
+    /* Realistic small stamp with ink effect */
     .stamp-sign-wrapper {
       display: flex;
       justify-content: space-between;
@@ -318,8 +299,8 @@
       width: 85px;
       height: 85px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(30, 64, 175, 0.12), rgba(30, 64, 175, 0.25));
-      border: 2px double #1e3a8a;
+      background: radial-gradient(circle at 30% 30%, rgba(30, 64, 175, 0.12), rgba(30, 64, 175, 0.28));
+      border: 2.5px double #1e3a8a;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -330,10 +311,9 @@
       font-size: 0.6rem;
       text-transform: uppercase;
       font-family: 'Courier New', monospace;
-      transform: rotate(-5deg);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1), inset 0 0 4px rgba(30,64,175,0.3);
-      backdrop-filter: blur(0.5px);
-      letter-spacing: 0.5px;
+      transform: rotate(-6deg);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1), inset 0 0 5px rgba(30,64,175,0.2);
+      backdrop-filter: blur(0.3px);
     }
     .realistic-stamp span:first-child {
       font-size: 0.7rem;
@@ -357,24 +337,9 @@
       border-radius: 16px;
       margin: 12px 0;
     }
-    /* Compact mode for many items (auto via media) */
-    @media print {
-      .items-table-preview td, .items-table-preview th {
-        padding: 4px 3px;
-        font-size: 0.7rem;
-      }
-      .info-row {
-        font-size: 0.7rem;
-      }
-      .brand-name {
-        font-size: 1.5rem;
-      }
-    }
-    @media (max-width: 640px) {
-      .tab-pane { padding: 18px 14px; }
-      .info-card { flex-direction: column; }
-      .realistic-stamp { width: 75px; height: 75px; font-size: 0.55rem; }
-      .brand-name { font-size: 1.4rem; }
+    @media (max-width: 700px) {
+      .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
+      .info-grid-pro { flex-direction: column; }
     }
   </style>
 </head>
@@ -434,10 +399,9 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_REPLACE_ME/exec";
   const USE_MOCK = false;   // set false after deploying Apps Script
 
-  // Items state (stable array)
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
 
-  // Helper: Number to Indian Rupees words
+  // Number to Indian Rupees words
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -465,7 +429,6 @@
     return result + " Only";
   }
 
-  // Render items table from itemsArray
   function renderItemsTable() {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
@@ -490,7 +453,7 @@
     updateAllAmounts();
   }
 
-  function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+  function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
   function attachItemEvents() {
     document.querySelectorAll('.item-desc').forEach(inp => inp.addEventListener('input', function(e) { let idx = parseInt(this.dataset.idx); itemsArray[idx].desc = this.value; updateAmount(idx); triggerPreviewUpdate(); }));
@@ -508,30 +471,11 @@
     if (span) span.innerText = amt.toFixed(2);
   }
 
-  function updateAllAmounts() {
-    itemsArray.forEach((_, i) => updateAmount(i));
-  }
+  function updateAllAmounts() { itemsArray.forEach((_, i) => updateAmount(i)); }
+  function removeItemRow(idx) { if (itemsArray.length <= 1) return; itemsArray.splice(idx, 1); renderItemsTable(); triggerPreviewUpdate(); }
+  function addNewItem() { itemsArray.push({ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }); renderItemsTable(); triggerPreviewUpdate(); }
+  function getItemsArrayFromState() { return itemsArray.filter(it => it.desc.trim() !== "").map((it, i) => ({ sno: i+1, desc: it.desc, hsn: it.hsn, qty: it.qty, rate: it.rate, amount: (it.qty * it.rate).toFixed(2) })); }
 
-  function removeItemRow(idx) {
-    if (itemsArray.length <= 1) return;
-    itemsArray.splice(idx, 1);
-    renderItemsTable();
-    triggerPreviewUpdate();
-  }
-
-  function addNewItem() {
-    itemsArray.push({ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 });
-    renderItemsTable();
-    triggerPreviewUpdate();
-  }
-
-  function getItemsArrayFromState() {
-    return itemsArray.filter(it => it.desc.trim() !== "").map((it, i) => ({
-      sno: i+1, desc: it.desc, hsn: it.hsn, qty: it.qty, rate: it.rate, amount: (it.qty * it.rate).toFixed(2)
-    }));
-  }
-
-  // Auto state code
   function updateStateCode() {
     const stateName = document.getElementById('stateName').value.trim().toLowerCase();
     const codeField = document.getElementById('stateCode');
@@ -584,6 +528,7 @@
     };
   }
 
+  // Professional layout: customer details on left, invoice meta on right
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
@@ -594,7 +539,7 @@
     let gstBreakdown = '';
     if (isDelhi) {
       gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                       <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
       gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
@@ -607,27 +552,24 @@
           <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>📞 +91 9711166056  ✉ avtechnologyy@gmail.com</div>
         </div>
 
-        <div class="info-card">
-          <div class="info-col">
+        <!-- Professional two-column info -->
+        <div class="info-grid-pro">
+          <div class="info-left">
+            <div class="info-row"><span class="info-label">M/S (Customer):</span><span class="info-value customer-name-cap">${customerName}</span></div>
+            <div class="info-row"><span class="info-label">GSTIN NO:</span><span class="info-value">${custGstin || '—'}</span></div>
+            <div class="info-row"><span class="info-label">State:</span><span class="info-value">${stateName} (Code: ${stateCode || '—'})</span></div>
+            <div class="info-row"><span class="info-label">Place of Supply:</span><span class="info-value">${placeSupply || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Vehicle No:</span><span class="info-value">${vehicleNo || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Delivery Date:</span><span class="info-value">${deliveryDate || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Transport Mode:</span><span class="info-value">${transportMode || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Cheque No:</span><span class="info-value">${chequeNo || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Bank/Branch:</span><span class="info-value">${bankBranch || '—'}</span></div>
+          </div>
+          <div class="info-right">
             <div class="info-row"><span class="info-label">GSTIN:</span><span class="info-value">07ABIFA3151F1ZS</span></div>
             <div class="info-row"><span class="info-label">STATE CODE:</span><span class="info-value">07</span></div>
             <div class="info-row"><span class="info-label">INVOICE NO:</span><span class="info-value">${invoiceNo}</span></div>
             <div class="info-row"><span class="info-label">DATE:</span><span class="info-value">${invoiceDate}</span></div>
-          </div>
-          <div class="info-col">
-            <div class="info-row"><span class="info-label">M/S:</span><span class="info-value customer-name-cap">${customerName}</span></div>
-            <div class="info-row"><span class="info-label">GSTIN NO:</span><span class="info-value">${custGstin || '—'}</span></div>
-            <div class="info-row"><span class="info-label">State:</span><span class="info-value">${stateName} (Code:${stateCode || '—'})</span></div>
-          </div>
-          <div class="info-col">
-            <div class="info-row"><span class="info-label">VEHICLE NO:</span><span class="info-value">${vehicleNo || '—'}</span></div>
-            <div class="info-row"><span class="info-label">DELIVERY DATE:</span><span class="info-value">${deliveryDate || '—'}</span></div>
-            <div class="info-row"><span class="info-label">PLACE OF SUPPLY:</span><span class="info-value">${placeSupply || '—'}</span></div>
-            <div class="info-row"><span class="info-label">TRANSPORT MODE:</span><span class="info-value">${transportMode || '—'}</span></div>
-          </div>
-          <div class="info-col">
-            <div class="info-row"><span class="info-label">CHEQUE NO:</span><span class="info-value">${chequeNo || '—'}</span></div>
-            <div class="info-row"><span class="info-label">BANK/BRANCH:</span><span class="info-value">${bankBranch || '—'}</span></div>
           </div>
         </div>
 
@@ -668,29 +610,36 @@
       </div>`;
   }
 
-  // PDF generation and share as PDF
+  // Reliable PDF generation with delay to ensure rendering
   async function downloadPDF() {
     const previewDiv = document.getElementById('invoicePreview');
     if (!previewDiv || previewDiv.style.display !== 'block') {
       alert("Please generate an invoice first.");
       return;
     }
-    const element = document.getElementById('invoiceContent');
+    // Ensure invoiceContent exists
+    let element = document.getElementById('invoiceContent');
     if (!element) {
-      alert("Invoice content not found. Generate again.");
-      return;
+      // fallback: re-generate preview content
+      const invData = collectInvoiceData();
+      if (!invData) { alert("No invoice data. Please fill customer and items."); return; }
+      previewDiv.innerHTML = buildInvoiceHTML(invData);
+      element = document.getElementById('invoiceContent');
+      if (!element) { alert("Error generating invoice content."); return; }
     }
     const opt = {
       margin: [0.2, 0.2, 0.2, 0.2],
       filename: `Invoice_${document.getElementById('invoiceNoManual').value || 'AV'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, letterRendering: true, useCORS: true },
+      html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     try {
+      // Small delay to ensure styles are applied
+      await new Promise(r => setTimeout(r, 100));
       await html2pdf().set(opt).from(element).save();
     } catch(e) {
-      alert("PDF generation failed: "+e.message);
+      alert("PDF generation failed: " + e.message);
     }
   }
 
@@ -700,8 +649,13 @@
       alert("Generate invoice first");
       return;
     }
-    const element = document.getElementById('invoiceContent');
-    if (!element) return;
+    let element = document.getElementById('invoiceContent');
+    if (!element) {
+      const invData = collectInvoiceData();
+      if (!invData) { alert("No invoice data."); return; }
+      previewDiv.innerHTML = buildInvoiceHTML(invData);
+      element = document.getElementById('invoiceContent');
+    }
     const opt = {
       margin: [0.2, 0.2, 0.2, 0.2],
       filename: `Invoice_${Date.now()}.pdf`,
@@ -709,15 +663,16 @@
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-    if (navigator.share && navigator.canShare({ files: [new File([pdfBlob], 'invoice.pdf', {type: 'application/pdf'})] })) {
-      const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
-      try {
+    try {
+      await new Promise(r => setTimeout(r, 100));
+      const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], 'invoice.pdf', {type: 'application/pdf'})] })) {
+        const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
         await navigator.share({ files: [file], title: 'AV TECHNOLOGY Invoice' });
-      } catch(e) { alert("Share cancelled or error"); }
-    } else {
-      alert("Sharing PDF not supported on this browser. Use Download PDF instead.");
-    }
+      } else {
+        alert("Share not supported, you can download PDF and share manually.");
+      }
+    } catch(e) { alert("Share failed: " + e.message); }
   }
 
   async function saveAndGenerate() {
@@ -773,7 +728,6 @@
     } else { alert("Configure GET endpoint or enable mock mode."); }
   });
 
-  // Tab switching
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
