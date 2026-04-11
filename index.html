@@ -21,6 +21,7 @@
       border-radius: 28px;
       box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15);
       overflow: hidden;
+      border: 1px solid #e2e8f0; /* thin outer border */
     }
     .tabs {
       display: flex;
@@ -147,7 +148,7 @@
     }
     @media print {
       body { background: white; padding: 0; margin: 0; }
-      .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
+      .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
       .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, .btn-print, #previewActionButtons, .invoice-list {
         display: none !important;
       }
@@ -155,7 +156,7 @@
       @page { size: A4; margin: 0.2in; }
       body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-    /* Premium invoice styles */
+    /* Premium invoice styles with thin borders */
     .tax-invoice-title {
       text-align: center;
       font-size: 22px;
@@ -163,13 +164,15 @@
       letter-spacing: 2px;
       color: #1f3b4c;
       margin-bottom: 12px;
-      border-bottom: 2px solid #cfdfed;
+      border-bottom: 1.5px solid #cfdfed;
       display: inline-block;
       padding-bottom: 6px;
     }
     .brand-header {
       text-align: center;
       margin-bottom: 20px;
+      border-bottom: 1px solid #e9eef3;
+      padding-bottom: 10px;
     }
     .brand-name {
       font-size: 1.9rem;
@@ -191,7 +194,7 @@
       justify-content: space-between;
       background: #fafcff;
       border: 1px solid #e2e8f0;
-      border-radius: 24px;
+      border-radius: 20px;
       padding: 18px 24px;
       margin: 20px 0;
       gap: 24px;
@@ -225,6 +228,7 @@
       border-collapse: collapse;
       margin: 18px 0;
       font-size: 0.75rem;
+      border: 1px solid #cfdfed;
     }
     .items-table-preview th, .items-table-preview td {
       border: 1px solid #cfdfed;
@@ -241,6 +245,7 @@
       border-radius: 28px;
       margin: 12px 0;
       font-weight: 600;
+      border: 1px solid #d9e2ef;
     }
     .total-row { background: #fef9e3; font-weight: 800; }
     .stamp-sign-wrapper {
@@ -250,6 +255,8 @@
       flex-wrap: wrap;
       margin-top: 35px;
       gap: 25px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
     }
     .realistic-stamp {
       width: 85px;
@@ -291,6 +298,7 @@
       border-radius: 16px;
       margin: 12px 0;
       border-left: 3px solid #f59e0b;
+      border: 1px solid #fde68a;
     }
     .invoice-list {
       margin-top: 20px;
@@ -388,12 +396,13 @@
 
 <script>
   // ---------- CONFIGURATION ----------
+  // REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL (after deploying the fixed script above)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhNiImSpG2FhBpV5_qhxarSn3pg8C8elMVQP3FJeyQtOTNL_kOd6OaBxSuzTsZVvRHlA/exec";
   
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
-  let allInvoices = []; // store for search
+  let allInvoices = [];
 
-  // Helper: number to words (same as before)
+  // Helper: number to words
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -421,7 +430,7 @@
     return result + " Only";
   }
 
-  // Render items table (same)
+  // Render items table
   function renderItemsTable() {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
@@ -515,12 +524,12 @@
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList></td><td>₹ ${it.amount}NonNullList<itemList></tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
       gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                       <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
       gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
@@ -554,7 +563,7 @@
         <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
-        <table style="width:100%; margin:12px 0;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
+        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
         <div class="terms"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
         <div class="stamp-sign-wrapper"><div class="realistic-stamp"><span>🔹 AV TECHNOLOGY</span><span>DELHI • APPROVED</span></div><div class="signature-box">FOR AV TECHNOLOGY<br><span style="border-top:2px dashed #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>AUTHORISED SIGNATORY</div></div>
         <div style="text-align:center; font-size:8px; margin-top:12px;">E. & O. E.</div>
@@ -565,7 +574,8 @@
   async function setNextInvoiceNumber() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getLast`);
-      const lastInv = await res.text();
+      const json = await res.json();
+      const lastInv = json.lastNo;
       if (lastInv && lastInv !== "INV-26/000") {
         const match = lastInv.match(/INV-(\d{2})\/(\d{3})/);
         if (match) {
@@ -585,6 +595,7 @@
         document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
       }
     } catch(e) {
+      console.error(e);
       document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
     }
   }
@@ -598,10 +609,9 @@
     try { await html2pdf().set(opt).from(element).save(); } catch(e) { alert("PDF error: "+e.message); }
   }
   function printElement(elementId) {
-    const originalTitle = document.title;
     const printContents = document.getElementById(elementId).cloneNode(true);
     const popup = window.open('', '_blank');
-    popup.document.write('<html><head><title>Print Invoice</title><link rel="stylesheet" href="data:text/css,' + encodeURIComponent(Array.from(document.styleSheets).map(sheet => { try { return Array.from(sheet.cssRules || []).map(rule => rule.cssText).join(''); } catch(e) { return ''; } }).join('')) + '"></head><body>' + printContents.outerHTML + '</body></html>');
+    popup.document.write('<html><head><title>Print Invoice</title><style>body { margin: 0; padding: 0; } @media print { body { margin: 0; } }</style></head><body>' + printContents.outerHTML + '</body></html>');
     popup.document.close();
     popup.print();
   }
@@ -641,27 +651,26 @@
   async function viewInvoice(invoiceNo) {
     const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
     const data = await res.json();
-    if (data === "NOT_FOUND") { alert("Not found"); return; }
+    if (data.error === "NOT_FOUND") { alert("Invoice not found"); return; }
     const html = buildInvoiceHTML(data);
     document.getElementById('pastInvoiceContainer').innerHTML = html;
   }
   async function printInvoiceFromList(invoiceNo) {
     const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
     const data = await res.json();
-    if (data === "NOT_FOUND") return;
+    if (data.error === "NOT_FOUND") return;
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = buildInvoiceHTML(data);
     const invoiceElem = tempDiv.firstChild;
-    const originalTitle = document.title;
     const popup = window.open('', '_blank');
-    popup.document.write('<html><head><title>Print Invoice</title><style>body { margin: 0; padding: 0; } @media print { body { margin: 0; } }</style></head><body>' + invoiceElem.outerHTML + '</body></html>');
+    popup.document.write('<html><head><title>Print Invoice</title><style>body { margin: 0; padding: 0; }</style></head><body>' + invoiceElem.outerHTML + '</body></html>');
     popup.document.close();
     popup.print();
   }
   async function downloadPDFFromList(invoiceNo) {
     const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
     const data = await res.json();
-    if (data === "NOT_FOUND") return;
+    if (data.error === "NOT_FOUND") return;
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = buildInvoiceHTML(data);
     const invoiceElem = tempDiv.firstChild;
