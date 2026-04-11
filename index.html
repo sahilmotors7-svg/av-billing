@@ -1,3 +1,12 @@
+The issues have been fixed:
+
+1. **Removed stray “追赶” characters** – they were typos in the table closing tag.  
+2. **Stamp & signature section now stays at the bottom** – proper margin and order restored.  
+3. **All other premium features** (compact info box, monochrome icons, smaller title, dotted stamp effect) remain intact.
+
+Below is the complete, ready-to-use HTML file. Copy and save as `index.html`.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,7 +191,7 @@
     /* ========== PREMIUM PROFESSIONAL INVOICE STYLES ========== */
     .tax-invoice-title {
       text-align: center;
-      font-size: 22px;  /* reduced from 28px */
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 2px;
       color: #1f3b4c;
@@ -211,7 +220,10 @@
       color: #2d3e50;
       margin-top: 6px;
     }
-    /* Two-column layout: left side (customer), right side (invoice + extra fields) */
+    .company-details i, .company-details em {
+      font-style: normal;
+    }
+    /* Two-column layout */
     .info-grid-pro {
       display: flex;
       flex-wrap: wrap;
@@ -284,13 +296,13 @@
       background: #fef9e3;
       font-weight: 800;
     }
-    /* Realistic small stamp with ink effect + dotted border hint */
+    /* Realistic stamp with dotted effect */
     .stamp-sign-wrapper {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       flex-wrap: wrap;
-      margin-top: 30px;
+      margin-top: 35px;
       gap: 25px;
     }
     .realistic-stamp {
@@ -312,6 +324,8 @@
       transform: rotate(-6deg);
       box-shadow: 0 3px 8px rgba(0,0,0,0.1), inset 0 0 5px rgba(30,64,175,0.2);
       backdrop-filter: blur(0.3px);
+      position: relative;
+      overflow: hidden;
     }
     .realistic-stamp span:first-child {
       font-size: 0.7rem;
@@ -319,6 +333,18 @@
       border-bottom: 1px solid #2563eb;
       padding-bottom: 3px;
       margin-bottom: 4px;
+    }
+    .realistic-stamp::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(30,64,175,0.08) 1px, transparent 1px);
+      background-size: 4px 4px;
+      pointer-events: none;
     }
     .signature-box {
       text-align: right;
@@ -328,36 +354,12 @@
       font-weight: 600;
       font-size: 0.75rem;
     }
-    /* Dotted letter effect: faint dotted pattern in background of stamp area (real bill feel) */
-    .realistic-stamp::before {
-      content: "";
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      right: 2px;
-      bottom: 2px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(30,64,175,0.05) 1px, transparent 1px);
-      background-size: 4px 4px;
-      pointer-events: none;
-    }
-    .realistic-stamp {
-      position: relative;
-      overflow: hidden;
-    }
     .terms {
       font-size: 0.68rem;
       background: #fef7e0;
       padding: 10px;
       border-radius: 16px;
       margin: 12px 0;
-    }
-    /* Remove pink color from phone icon */
-    .company-details i, .company-details em {
-      font-style: normal;
-    }
-    .no-pink {
-      color: #2d3e50;
     }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
@@ -550,7 +552,6 @@
     };
   }
 
-  // Professional layout with Transport Mode, Cheque, Bank moved to right side
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
@@ -574,7 +575,6 @@
           <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>📞 +91 9711166056  ✉ avtechnologyy@gmail.com</div>
         </div>
 
-        <!-- Two-column info: Left (customer details) + Right (invoice & extra fields) -->
         <div class="info-grid-pro">
           <div class="info-left">
             <div class="info-row"><span class="info-label">M/S (Customer):</span><span class="info-value customer-name-cap">${customerName}</span></div>
@@ -598,7 +598,7 @@
         <table class="items-table-preview">
           <thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead>
           <tbody>${itemsRows}</tbody>
-        追赶
+        </table>
 
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
@@ -607,7 +607,7 @@
           ${gstBreakdown}
           <tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr>
           <tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr>
-        追赶
+        </table>
         
         <div class="terms">
           <strong>TERMS & CONDITIONS:</strong><br>
@@ -632,7 +632,7 @@
       </div>`;
   }
 
-  // Reliable PDF generation with delay and element verification
+  // Reliable PDF generation
   async function downloadPDF() {
     const previewDiv = document.getElementById('invoicePreview');
     if (!previewDiv || previewDiv.style.display !== 'block') {
@@ -647,7 +647,6 @@
       element = document.getElementById('invoiceContent');
       if (!element) { alert("Error generating invoice content."); return; }
     }
-    // Force reflow and wait for fonts/images
     element.style.display = 'block';
     await new Promise(r => setTimeout(r, 200));
     const opt = {
@@ -767,3 +766,4 @@
 </script>
 </body>
 </html>
+```
