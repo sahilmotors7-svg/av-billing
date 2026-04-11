@@ -410,9 +410,10 @@
 </div>
 
 <script>
-  // ---------- CONFIG ----------
-  const SCRIPT_URL = "const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhNiImSpG2FhBpV5_qhxarSn3pg8C8elMVQP3FJeyQtOTNL_kOd6OaBxSuzTsZVvRHlA/exec";";
-  const USE_MOCK = false;   // set false after deploying Apps Script
+  // ---------- CONFIGURATION ----------
+  // ✅ Your actual Google Apps Script URL (already inserted)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhNiImSpG2FhBpV5_qhxarSn3pg8C8elMVQP3FJeyQtOTNL_kOd6OaBxSuzTsZVvRHlA/exec";
+  const USE_MOCK = false;   // false = real cloud storage
 
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
 
@@ -548,12 +549,12 @@
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList><tr><td>₹ ${it.amount}NonNullList<itemList></tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
       gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+                       <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
       gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
@@ -705,16 +706,16 @@
       document.getElementById('pdfDownloadBtn').addEventListener('click', downloadPDF);
       document.getElementById('pdfShareBtn').addEventListener('click', shareAsPDF);
     }
-    if (!USE_MOCK && SCRIPT_URL.includes("REPLACE_ME")) {
-      alert("⚠️ Google Apps Script URL not configured. Invoice ready but not saved to cloud.");
-    } else if (!USE_MOCK) {
-      try {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) });
-        alert(`✅ Invoice ${invoiceData.invoiceNo} saved to Google Sheet!`);
-      } catch(e) { alert("Cloud save failed, but invoice is generated."); }
-    } else {
-      localStorage.setItem(invoiceData.invoiceNo, JSON.stringify(invoiceData));
-      alert(`📌 Demo save: ${invoiceData.invoiceNo} stored locally.`);
+    // Save to Google Sheet
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(invoiceData)
+      });
+      alert(`✅ Invoice ${invoiceData.invoiceNo} saved to Google Sheet!`);
+    } catch(e) {
+      alert("Cloud save failed: " + e.message + "\nInvoice is still generated locally.");
     }
   }
 
@@ -732,11 +733,18 @@
   document.getElementById('fetchInvoiceBtn').addEventListener('click', async () => {
     const invNo = document.getElementById('searchInvNo').value.trim();
     if(!invNo) return alert("Enter Invoice Number");
-    if(USE_MOCK){
-      const data = localStorage.getItem(invNo);
-      if(data) document.getElementById('pastInvoiceContainer').innerHTML = buildInvoiceHTML(JSON.parse(data));
-      else document.getElementById('pastInvoiceContainer').innerHTML = "<p style='color:red;'>❌ Not found</p>";
-    } else { alert("Configure GET endpoint or enable mock mode."); }
+    try {
+      const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invNo)}`);
+      const text = await res.text();
+      if (text === "NOT_FOUND") {
+        document.getElementById('pastInvoiceContainer').innerHTML = "<p style='color:red;'>❌ Invoice not found in Google Sheet.</p>";
+        return;
+      }
+      const data = JSON.parse(text);
+      document.getElementById('pastInvoiceContainer').innerHTML = buildInvoiceHTML(data);
+    } catch(e) {
+      alert("Error fetching: " + e.message);
+    }
   });
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -757,4 +765,3 @@
 </script>
 </body>
 </html>
-```
