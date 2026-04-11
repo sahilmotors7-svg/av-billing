@@ -1,9 +1,13 @@
+Here is the fully refined, premium HTML document for AV Technology invoices — with realistic stamp, A4 single-page layout, PDF sharing, print optimization, and all requested improvements.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>AV TECHNOLOGY | Premium Tax Invoice</title>
+  <title>AV TECHNOLOGY | Professional Tax Invoice</title>
+  <!-- html2pdf + html2canvas for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     * {
       margin: 0;
@@ -12,19 +16,21 @@
     }
 
     body {
-      background: #eef2f5;
+      background: #eef2f8;
       font-family: 'Segoe UI', 'Roboto', 'Inter', system-ui, sans-serif;
-      padding: 24px 16px;
+      padding: 20px 16px;
       display: flex;
       justify-content: center;
+      align-items: center;
     }
 
+    /* Main container - A4 width */
     .app-container {
       max-width: 210mm;
       width: 100%;
       background: white;
       border-radius: 28px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
       overflow: hidden;
     }
 
@@ -32,9 +38,9 @@
     .tabs {
       display: flex;
       gap: 8px;
-      background: #f8fafc;
-      padding: 16px 24px 0 24px;
-      border-bottom: 2px solid #e0edf5;
+      background: #f9fbfd;
+      padding: 14px 24px 0 24px;
+      border-bottom: 2px solid #e2edf5;
     }
     .tab-btn {
       background: none;
@@ -60,7 +66,7 @@
       display: block;
     }
 
-    /* Form Grid */
+    /* Form grid - responsive */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -91,7 +97,7 @@
       box-shadow: 0 0 0 2px rgba(30,74,118,0.2);
     }
 
-    /* Items Table - stable */
+    /* Items table - stable and compact */
     .items-wrapper {
       overflow-x: auto;
       margin: 18px 0 12px;
@@ -121,7 +127,7 @@
       border-radius: 14px;
       text-align: center;
     }
-    .add-row-btn, .action-btn {
+    .add-row-btn {
       background: #0f3b2c;
       color: white;
       border: none;
@@ -130,13 +136,16 @@
       font-weight: bold;
       cursor: pointer;
       font-size: 0.85rem;
-      margin-right: 12px;
+      margin-top: 6px;
     }
     .remove-row {
       background: #b91c1c;
+      color: white;
+      border: none;
       border-radius: 40px;
       padding: 5px 12px;
       font-weight: bold;
+      cursor: pointer;
     }
     .action-buttons {
       display: flex;
@@ -154,24 +163,51 @@
       border: none;
     }
     .btn-secondary { background: #4a5568; }
-    .btn-print { background: #2c6e2c; }
+    .btn-pdf { background: #c2410c; }
     .btn-share { background: #1e6f5c; }
 
-    /* Invoice Preview - Premium styling */
+    /* Invoice Preview - print optimized for A4 */
     .invoice-preview {
       background: white;
       margin-top: 30px;
       border-radius: 24px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      padding: 24px 28px;
+      padding: 20px 24px;
     }
+
+    /* PRINT STYLES - A4 single page, no extra headers */
     @media print {
-      body { background: white; padding: 0; }
-      .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-secondary, .btn-print, .btn-share {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      .app-container {
+        max-width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, #previewActionButtons {
         display: none !important;
       }
-      .invoice-preview { padding: 0.2in; margin: 0; box-shadow: none; }
+      .invoice-preview {
+        margin: 0;
+        padding: 0.2in;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      @page {
+        size: A4;
+        margin: 0.2in;
+      }
+      /* Remove any automatic date/time header */
+      header, footer, .print-header, .print-footer {
+        display: none;
+      }
+      body * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
     }
 
     /* ========== PREMIUM INVOICE STYLES ========== */
@@ -212,7 +248,7 @@
       background: #fbfdff;
       border: 1px solid #e2e8f0;
       border-radius: 24px;
-      padding: 18px 22px;
+      padding: 16px 22px;
       margin: 20px 0;
       display: flex;
       flex-wrap: wrap;
@@ -221,11 +257,11 @@
     }
     .info-col {
       flex: 1;
-      min-width: 180px;
+      min-width: 170px;
     }
     .info-row {
       display: flex;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-size: 0.8rem;
       align-items: baseline;
     }
@@ -254,6 +290,11 @@
       padding: 8px 6px;
       text-align: center;
     }
+    .items-table-preview th {
+      background: #1e4a76;
+      color: white;
+      font-weight: 700;
+    }
     .word-amount {
       background: #eef2ff;
       padding: 8px 14px;
@@ -266,21 +307,21 @@
       background: #fef9e3;
       font-weight: 800;
     }
-    /* Realistic Stamp (Pad effect) */
+    /* Realistic Small Stamp (ink pad effect) */
     .stamp-sign-wrapper {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       flex-wrap: wrap;
-      margin-top: 35px;
-      gap: 30px;
+      margin-top: 30px;
+      gap: 25px;
     }
     .realistic-stamp {
-      width: 120px;
-      height: 120px;
+      width: 85px;
+      height: 85px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(30, 64, 175, 0.08), rgba(30, 64, 175, 0.2));
-      border: 3px solid #1e3a8a;
+      background: radial-gradient(circle at 30% 30%, rgba(30, 64, 175, 0.12), rgba(30, 64, 175, 0.25));
+      border: 2px double #1e3a8a;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -288,39 +329,53 @@
       text-align: center;
       font-weight: 800;
       color: #1e3a8a;
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
       font-family: 'Courier New', monospace;
-      transform: rotate(-6deg);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 0 8px rgba(30,64,175,0.2);
-      backdrop-filter: blur(0.8px);
+      transform: rotate(-5deg);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1), inset 0 0 4px rgba(30,64,175,0.3);
+      backdrop-filter: blur(0.5px);
+      letter-spacing: 0.5px;
     }
     .realistic-stamp span:first-child {
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       letter-spacing: 1px;
       border-bottom: 1px solid #2563eb;
-      padding-bottom: 5px;
-      margin-bottom: 6px;
+      padding-bottom: 3px;
+      margin-bottom: 4px;
     }
     .signature-box {
       text-align: right;
       border-top: 2px dashed #4b5563;
-      min-width: 180px;
-      padding-top: 10px;
+      min-width: 170px;
+      padding-top: 8px;
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
     .terms {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       background: #fef7e0;
       padding: 10px;
       border-radius: 16px;
       margin: 12px 0;
     }
+    /* Compact mode for many items (auto via media) */
+    @media print {
+      .items-table-preview td, .items-table-preview th {
+        padding: 4px 3px;
+        font-size: 0.7rem;
+      }
+      .info-row {
+        font-size: 0.7rem;
+      }
+      .brand-name {
+        font-size: 1.5rem;
+      }
+    }
     @media (max-width: 640px) {
       .tab-pane { padding: 18px 14px; }
       .info-card { flex-direction: column; }
-      .realistic-stamp { width: 90px; height: 90px; font-size: 0.6rem; }
+      .realistic-stamp { width: 75px; height: 75px; font-size: 0.55rem; }
       .brand-name { font-size: 1.4rem; }
     }
   </style>
@@ -335,7 +390,7 @@
   <!-- CREATE TAB -->
   <div id="createTab" class="tab-pane active-pane">
     <div class="form-grid">
-      <div class="field"><label>Invoice No. (Year/Number)</label><input type="text" id="invoiceNoManual" placeholder="INV-26/001"></div>
+      <div class="field"><label>Invoice No. (Year/Seq)</label><input type="text" id="invoiceNoManual" placeholder="INV-26/001"></div>
       <div class="field"><label>Customer Name (M/S) *</label><input type="text" id="customerName" placeholder="M/s SHARMA ENTERPRISES"></div>
       <div class="field"><label>Customer GSTIN</label><input type="text" id="custGstin" placeholder="07ABCFG1234F1Z"></div>
       <div class="field"><label>State Name (auto code)</label><input type="text" id="stateName" placeholder="Delhi" value="Delhi"></div>
@@ -379,12 +434,12 @@
 <script>
   // ---------- CONFIG ----------
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_REPLACE_ME/exec";
-  const USE_MOCK = false;
+  const USE_MOCK = false;   // set false after deploying Apps Script
 
-  // Items state (array of objects) to prevent reset on add/delete
+  // Items state (stable array)
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
 
-  // Helper: number to words
+  // Helper: Number to Indian Rupees words
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -541,12 +596,12 @@
     let gstBreakdown = '';
     if (isDelhi) {
       gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+                       <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
       gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
     return `
-      <div style="font-family:'Segoe UI',Roboto,sans-serif;">
+      <div style="font-family:'Segoe UI',Roboto,sans-serif;" id="invoiceContent">
         <div style="text-align:center;"><div class="tax-invoice-title">TAX INVOICE</div></div>
         <div class="brand-header">
           <div class="brand-name">AV TECHNOLOGY</div>
@@ -615,17 +670,55 @@
       </div>`;
   }
 
-  // Print & PDF + Share
-  function printInvoice() { window.print(); }
-  async function shareInvoice() {
-    const previewHtml = document.getElementById('invoicePreview').innerHTML;
-    if (!previewHtml) { alert("Generate invoice first"); return; }
-    if (navigator.share) {
+  // PDF generation and share as PDF
+  async function downloadPDF() {
+    const previewDiv = document.getElementById('invoicePreview');
+    if (!previewDiv || previewDiv.style.display !== 'block') {
+      alert("Please generate an invoice first.");
+      return;
+    }
+    const element = document.getElementById('invoiceContent');
+    if (!element) {
+      alert("Invoice content not found. Generate again.");
+      return;
+    }
+    const opt = {
+      margin: [0.2, 0.2, 0.2, 0.2],
+      filename: `Invoice_${document.getElementById('invoiceNoManual').value || 'AV'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, letterRendering: true, useCORS: true },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    try {
+      await html2pdf().set(opt).from(element).save();
+    } catch(e) {
+      alert("PDF generation failed: "+e.message);
+    }
+  }
+
+  async function shareAsPDF() {
+    const previewDiv = document.getElementById('invoicePreview');
+    if (!previewDiv || previewDiv.style.display !== 'block') {
+      alert("Generate invoice first");
+      return;
+    }
+    const element = document.getElementById('invoiceContent');
+    if (!element) return;
+    const opt = {
+      margin: [0.2, 0.2, 0.2, 0.2],
+      filename: `Invoice_${Date.now()}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+    if (navigator.share && navigator.canShare({ files: [new File([pdfBlob], 'invoice.pdf', {type: 'application/pdf'})] })) {
+      const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
       try {
-        await navigator.share({ title: 'AV TECHNOLOGY Invoice', text: 'Tax Invoice', url: window.location.href });
-      } catch(e) { alert("Share cancelled"); }
+        await navigator.share({ files: [file], title: 'AV TECHNOLOGY Invoice' });
+      } catch(e) { alert("Share cancelled or error"); }
     } else {
-      alert("Share not supported, you can take screenshot or use Print > Save as PDF");
+      alert("Sharing PDF not supported on this browser. Use Download PDF instead.");
     }
   }
 
@@ -636,16 +729,17 @@
     const previewDiv = document.getElementById('invoicePreview');
     previewDiv.innerHTML = finalHtml;
     previewDiv.style.display = 'block';
-    // Add print/share buttons inside preview if needed (already added globally)
     if (!document.getElementById('previewActionButtons')) {
       const btnDiv = document.createElement('div');
       btnDiv.id = 'previewActionButtons';
       btnDiv.style.marginTop = '20px';
       btnDiv.style.display = 'flex';
       btnDiv.style.gap = '12px';
-      btnDiv.innerHTML = `<button class="btn-print action-btn" onclick="window.print()">🖨️ Print / PDF</button>
-                          <button class="btn-share action-btn" onclick="shareInvoice()">📤 Share</button>`;
+      btnDiv.innerHTML = `<button class="btn-pdf action-btn" id="pdfDownloadBtn">📄 Download PDF</button>
+                          <button class="btn-share action-btn" id="pdfShareBtn">📤 Share PDF</button>`;
       previewDiv.appendChild(btnDiv);
+      document.getElementById('pdfDownloadBtn').addEventListener('click', downloadPDF);
+      document.getElementById('pdfShareBtn').addEventListener('click', shareAsPDF);
     }
     if (!USE_MOCK && SCRIPT_URL.includes("REPLACE_ME")) {
       alert("⚠️ Google Apps Script URL not configured. Invoice ready but not saved to cloud.");
@@ -660,7 +754,6 @@
     }
   }
 
-  // Auto-generate default invoice number with current year
   function setDefaultInvoiceNo() {
     const year = new Date().getFullYear().toString().slice(-2);
     const existing = document.getElementById('invoiceNoManual').value.trim();
@@ -693,13 +786,12 @@
     });
   });
 
-  // Initial render
   renderItemsTable();
   updateStateCode();
   setDefaultInvoiceNo();
   document.getElementById('deliveryDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('placeSupply').value = "Delhi";
-  window.shareInvoice = shareInvoice;
 </script>
 </body>
 </html>
+```
