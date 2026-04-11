@@ -21,7 +21,7 @@
       border-radius: 28px;
       box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15);
       overflow: hidden;
-      border: 1px solid #e2e8f0; /* thin outer border */
+      border: 1px solid #e2e8f0;
     }
     .tabs {
       display: flex;
@@ -136,7 +136,6 @@
     }
     .btn-secondary { background: #4a5568; }
     .btn-pdf { background: #c2410c; }
-    .btn-share { background: #1e6f5c; }
     .btn-print { background: #2c6e2c; }
     .invoice-preview {
       background: white;
@@ -146,17 +145,18 @@
       padding: 20px 24px;
       border: 1px solid #e9eef3;
     }
+    /* PRINT STYLES - critical for proper print layout */
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, .btn-print, #previewActionButtons, .invoice-list {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-print, #previewActionButtons, .invoice-list {
         display: none !important;
       }
       .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; border: none; }
       @page { size: A4; margin: 0.2in; }
       body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-    /* Premium invoice styles with thin borders */
+    /* Premium invoice styles */
     .tax-invoice-title {
       text-align: center;
       font-size: 22px;
@@ -396,7 +396,6 @@
 
 <script>
   // ---------- CONFIGURATION ----------
-  // REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL (after deploying the fixed script above)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvvVq0C0FbyoyULkxk9LZZyMayWmNSc-mta2ksFrbnJ6e3qOyWOYoc6rFKCoCeKQQugA/exec";
   
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
@@ -519,12 +518,14 @@
       cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items
     };
   }
+
+  // FIXED: removed all NonNullList garbage
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList></td><td>₹ ${it.amount}NonNullList<itemList></tr>`;
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
@@ -608,12 +609,31 @@
     const opt = { margin: [0.2,0.2,0.2,0.2], filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
     try { await html2pdf().set(opt).from(element).save(); } catch(e) { alert("PDF error: "+e.message); }
   }
-  function printElement(elementId) {
-    const printContents = document.getElementById(elementId).cloneNode(true);
-    const popup = window.open('', '_blank');
-    popup.document.write('<html><head><title>Print Invoice</title><style>body { margin: 0; padding: 0; } @media print { body { margin: 0; } }</style></head><body>' + printContents.outerHTML + '</body></html>');
-    popup.document.close();
-    popup.print();
+  // Fixed print: use clone and proper styles
+  function printInvoice(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return alert("No invoice to print");
+    const clone = element.cloneNode(true);
+    const styles = document.querySelector('style').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>AV TECHNOLOGY Invoice</title>
+          <style>
+            ${styles}
+            body { margin: 0; padding: 0; background: white; }
+            @media print {
+              body { margin: 0; padding: 0; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>${clone.outerHTML}</body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
   }
 
   // Load last 10 invoices
@@ -662,10 +682,13 @@
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = buildInvoiceHTML(data);
     const invoiceElem = tempDiv.firstChild;
-    const popup = window.open('', '_blank');
-    popup.document.write('<html><head><title>Print Invoice</title><style>body { margin: 0; padding: 0; }</style></head><body>' + invoiceElem.outerHTML + '</body></html>');
-    popup.document.close();
-    popup.print();
+    const styles = document.querySelector('style').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html><head><title>Print Invoice</title><style>${styles} body { margin: 0; padding: 0; }</style></head><body>${invoiceElem.outerHTML}</body></html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
   }
   async function downloadPDFFromList(invoiceNo) {
     const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
@@ -688,10 +711,10 @@
     }
   }
 
-  // Save and generate main invoice
+  // Save and generate main invoice (silent save - no alert)
   async function saveAndGenerate() {
     const invoiceData = collectInvoiceData();
-    if (!invoiceData) { alert("❌ Fill customer and at least one product."); return; }
+    if (!invoiceData) { alert("❌ Please fill Customer Name and at least one product."); return; }
     const finalHtml = buildInvoiceHTML(invoiceData);
     const previewDiv = document.getElementById('invoicePreview');
     previewDiv.innerHTML = finalHtml;
@@ -705,14 +728,14 @@
       btnDiv.innerHTML = `<button class="btn-print" id="printBtnMain">🖨️ Print</button>
                           <button class="btn-pdf" id="pdfDownloadMain">📄 Download PDF</button>`;
       previewDiv.appendChild(btnDiv);
-      document.getElementById('printBtnMain').addEventListener('click', () => printElement('invoiceContent'));
+      document.getElementById('printBtnMain').addEventListener('click', () => printInvoice('invoiceContent'));
       document.getElementById('pdfDownloadMain').addEventListener('click', () => downloadPDF('invoiceContent', `Invoice_${invoiceData.invoiceNo}.pdf`));
     }
-    try {
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) });
-      alert(`✅ Invoice ${invoiceData.invoiceNo} saved!`);
-      await setNextInvoiceNumber(); // update next number
-    } catch(e) { alert("Save failed but invoice generated locally."); }
+    // Silent save - no alert message
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) })
+      .catch(e => console.error("Save error:", e));
+    // Update next invoice number silently
+    await setNextInvoiceNumber();
   }
 
   // Initialization
@@ -744,7 +767,7 @@
   window.viewInvoice = viewInvoice;
   window.printInvoiceFromList = printInvoiceFromList;
   window.downloadPDFFromList = downloadPDFFromList;
-  window.printElement = printElement;
+  window.printInvoice = printInvoice;
   window.downloadPDF = downloadPDF;
 </script>
 </body>
