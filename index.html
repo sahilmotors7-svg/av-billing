@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>AV TECHNOLOGY | Professional Tax Invoice</title>
-  <!-- html2pdf + html2canvas for reliable PDF -->
+  <!-- html2pdf for PDF generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     * {
@@ -154,10 +154,13 @@
       font-weight: 700;
       cursor: pointer;
       border: none;
+      transition: 0.2s;
     }
+    .btn-primary:hover { opacity: 0.9; }
     .btn-secondary { background: #4a5568; }
     .btn-pdf { background: #c2410c; }
     .btn-share { background: #1e6f5c; }
+    .btn-print { background: #2c6e2c; }
 
     .invoice-preview {
       background: white;
@@ -165,21 +168,22 @@
       border-radius: 24px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       padding: 20px 24px;
+      border: 1px solid #e9eef3;  /* subtle border */
     }
 
     /* PRINT STYLES - clean A4 */
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, #previewActionButtons {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, .btn-print, #previewActionButtons {
         display: none !important;
       }
-      .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; }
+      .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; border: none; }
       @page { size: A4; margin: 0.2in; }
       body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
 
-    /* ========== PREMIUM PROFESSIONAL INVOICE STYLES ========== */
+    /* ========== PREMIUM INVOICE STYLES ========== */
     .tax-invoice-title {
       text-align: center;
       font-size: 22px;
@@ -210,9 +214,6 @@
       font-size: 0.7rem;
       color: #2d3e50;
       margin-top: 6px;
-    }
-    .company-details i, .company-details em {
-      font-style: normal;
     }
     /* Two-column layout */
     .info-grid-pro {
@@ -351,6 +352,7 @@
       padding: 10px;
       border-radius: 16px;
       margin: 12px 0;
+      border-left: 3px solid #f59e0b;
     }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
@@ -411,9 +413,8 @@
 
 <script>
   // ---------- CONFIGURATION ----------
-  // ✅ Your actual Google Apps Script URL (already inserted)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhNiImSpG2FhBpV5_qhxarSn3pg8C8elMVQP3FJeyQtOTNL_kOd6OaBxSuzTsZVvRHlA/exec";
-  const USE_MOCK = false;   // false = real cloud storage
+  const USE_MOCK = false;
 
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
 
@@ -544,17 +545,18 @@
     };
   }
 
+  // FIXED: removed NonNullList garbage
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList><tr><td>₹ ${it.amount}NonNullList<itemList></tr>`;
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
       gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                       <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
       gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
@@ -624,7 +626,7 @@
       </div>`;
   }
 
-  // Reliable PDF generation
+  // PDF download using html2pdf
   async function downloadPDF() {
     const previewDiv = document.getElementById('invoicePreview');
     if (!previewDiv || previewDiv.style.display !== 'block') {
@@ -651,8 +653,18 @@
     try {
       await html2pdf().set(opt).from(element).save();
     } catch(e) {
-      alert("PDF generation failed: " + e.message);
+      alert("PDF download failed: " + e.message + "\nTry using the Print button instead.");
     }
+  }
+
+  // Browser print (also saves as PDF)
+  function printInvoice() {
+    const previewDiv = document.getElementById('invoicePreview');
+    if (!previewDiv || previewDiv.style.display !== 'block') {
+      alert("Please generate an invoice first.");
+      return;
+    }
+    window.print();
   }
 
   async function shareAsPDF() {
@@ -700,15 +712,18 @@
       btnDiv.style.marginTop = '20px';
       btnDiv.style.display = 'flex';
       btnDiv.style.gap = '12px';
-      btnDiv.innerHTML = `<button class="btn-pdf action-btn" id="pdfDownloadBtn">📄 Download PDF</button>
+      btnDiv.style.flexWrap = 'wrap';
+      btnDiv.innerHTML = `<button class="btn-print action-btn" id="printBtn">🖨️ Print / Save as PDF</button>
+                          <button class="btn-pdf action-btn" id="pdfDownloadBtn">📄 Download PDF</button>
                           <button class="btn-share action-btn" id="pdfShareBtn">📤 Share PDF</button>`;
       previewDiv.appendChild(btnDiv);
+      document.getElementById('printBtn').addEventListener('click', printInvoice);
       document.getElementById('pdfDownloadBtn').addEventListener('click', downloadPDF);
       document.getElementById('pdfShareBtn').addEventListener('click', shareAsPDF);
     }
     // Save to Google Sheet
     try {
-      const response = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(invoiceData)
