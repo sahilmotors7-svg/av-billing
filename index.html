@@ -4,15 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>AV TECHNOLOGY | Professional Tax Invoice</title>
-  <!-- html2pdf for PDF generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #eef2f8;
       font-family: 'Segoe UI', 'Roboto', 'Inter', system-ui, sans-serif;
@@ -20,16 +14,14 @@
       display: flex;
       justify-content: center;
     }
-
     .app-container {
       max-width: 210mm;
       width: 100%;
       background: white;
       border-radius: 28px;
-      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15);
       overflow: hidden;
     }
-
     .tabs {
       display: flex;
       gap: 8px;
@@ -46,7 +38,6 @@
       border-radius: 30px 30px 0 0;
       cursor: pointer;
       color: #2c3e66;
-      transition: 0.2s;
     }
     .tab-btn.active {
       background: white;
@@ -57,10 +48,7 @@
       display: none;
       padding: 28px 24px;
     }
-    .tab-pane.active-pane {
-      display: block;
-    }
-
+    .tab-pane.active-pane { display: block; }
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -76,21 +64,13 @@
       font-weight: 700;
       font-size: 0.75rem;
       color: #1e4a76;
-      letter-spacing: 0.3px;
     }
     .field input, .field select {
       padding: 12px 14px;
       border: 1.5px solid #cbdbe6;
       border-radius: 18px;
       font-size: 0.9rem;
-      background: white;
     }
-    .field input:focus {
-      outline: none;
-      border-color: #1e4a76;
-      box-shadow: 0 0 0 2px rgba(30,74,118,0.2);
-    }
-
     .items-wrapper {
       overflow-x: auto;
       margin: 18px 0 12px;
@@ -128,7 +108,6 @@
       border-radius: 40px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 0.85rem;
       margin-top: 6px;
     }
     .remove-row {
@@ -137,7 +116,6 @@
       border: none;
       border-radius: 40px;
       padding: 5px 12px;
-      font-weight: bold;
       cursor: pointer;
     }
     .action-buttons {
@@ -154,36 +132,30 @@
       font-weight: 700;
       cursor: pointer;
       border: none;
-      transition: 0.2s;
     }
-    .btn-primary:hover { opacity: 0.9; }
     .btn-secondary { background: #4a5568; }
     .btn-pdf { background: #c2410c; }
     .btn-share { background: #1e6f5c; }
     .btn-print { background: #2c6e2c; }
-
     .invoice-preview {
       background: white;
       margin-top: 30px;
       border-radius: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       padding: 20px 24px;
-      border: 1px solid #e9eef3;  /* subtle border */
+      border: 1px solid #e9eef3;
     }
-
-    /* PRINT STYLES - clean A4 */
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, .btn-print, #previewActionButtons {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-pdf, .btn-share, .btn-print, #previewActionButtons, .invoice-list {
         display: none !important;
       }
       .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; border: none; }
       @page { size: A4; margin: 0.2in; }
       body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-
-    /* ========== PREMIUM INVOICE STYLES ========== */
+    /* Premium invoice styles */
     .tax-invoice-title {
       text-align: center;
       font-size: 22px;
@@ -193,7 +165,6 @@
       margin-bottom: 12px;
       border-bottom: 2px solid #cfdfed;
       display: inline-block;
-      width: auto;
       padding-bottom: 6px;
     }
     .brand-header {
@@ -208,14 +179,12 @@
     .brand-tag {
       font-size: 0.7rem;
       color: #2c5a7a;
-      font-weight: 500;
     }
     .company-details {
       font-size: 0.7rem;
       color: #2d3e50;
       margin-top: 6px;
     }
-    /* Two-column layout */
     .info-grid-pro {
       display: flex;
       flex-wrap: wrap;
@@ -227,16 +196,8 @@
       margin: 20px 0;
       gap: 24px;
     }
-    .info-left {
-      flex: 2;
-      min-width: 220px;
-    }
-    .info-right {
-      flex: 1.5;
-      min-width: 200px;
-      border-left: 1px solid #e2e8f0;
-      padding-left: 24px;
-    }
+    .info-left { flex: 2; min-width: 220px; }
+    .info-right { flex: 1.5; min-width: 200px; border-left: 1px solid #e2e8f0; padding-left: 24px; }
     .info-row {
       display: flex;
       margin-bottom: 12px;
@@ -252,7 +213,6 @@
     .info-value {
       font-weight: 500;
       color: #1e293b;
-      word-break: break-word;
     }
     .customer-name-cap {
       text-transform: uppercase;
@@ -274,7 +234,6 @@
     .items-table-preview th {
       background: #1e4a76;
       color: white;
-      font-weight: 700;
     }
     .word-amount {
       background: #eef2ff;
@@ -282,13 +241,8 @@
       border-radius: 28px;
       margin: 12px 0;
       font-weight: 600;
-      font-size: 0.8rem;
     }
-    .total-row {
-      background: #fef9e3;
-      font-weight: 800;
-    }
-    /* Realistic stamp with dotted effect */
+    .total-row { background: #fef9e3; font-weight: 800; }
     .stamp-sign-wrapper {
       display: flex;
       justify-content: space-between;
@@ -301,7 +255,7 @@
       width: 85px;
       height: 85px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(30, 64, 175, 0.12), rgba(30, 64, 175, 0.28));
+      background: radial-gradient(circle at 30% 30%, rgba(30,64,175,0.12), rgba(30,64,175,0.28));
       border: 2.5px double #1e3a8a;
       display: flex;
       flex-direction: column;
@@ -314,29 +268,14 @@
       text-transform: uppercase;
       font-family: 'Courier New', monospace;
       transform: rotate(-6deg);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1), inset 0 0 5px rgba(30,64,175,0.2);
-      backdrop-filter: blur(0.3px);
       position: relative;
       overflow: hidden;
     }
     .realistic-stamp span:first-child {
       font-size: 0.7rem;
-      letter-spacing: 1px;
       border-bottom: 1px solid #2563eb;
       padding-bottom: 3px;
       margin-bottom: 4px;
-    }
-    .realistic-stamp::before {
-      content: "";
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      right: 2px;
-      bottom: 2px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(30,64,175,0.08) 1px, transparent 1px);
-      background-size: 4px 4px;
-      pointer-events: none;
     }
     .signature-box {
       text-align: right;
@@ -344,7 +283,6 @@
       min-width: 170px;
       padding-top: 8px;
       font-weight: 600;
-      font-size: 0.75rem;
     }
     .terms {
       font-size: 0.68rem;
@@ -353,6 +291,45 @@
       border-radius: 16px;
       margin: 12px 0;
       border-left: 3px solid #f59e0b;
+    }
+    .invoice-list {
+      margin-top: 20px;
+      border-top: 2px solid #e2edf5;
+      padding-top: 20px;
+    }
+    .invoice-card {
+      background: #f9fafb;
+      border-radius: 20px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #e2e8f0;
+    }
+    .invoice-card-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .invoice-actions button {
+      margin-left: 8px;
+      padding: 6px 12px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .search-box {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 40px;
+      border: 1px solid #cbdbe6;
     }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
@@ -381,9 +358,8 @@
       <div class="field"><label>Transport Mode</label><input type="text" id="transportMode" placeholder="Road / Van"></div>
       <div class="field"><label>Cheque No.</label><input type="text" id="chequeNo"></div>
       <div class="field"><label>Bank & Branch</label><input type="text" id="bankBranch" placeholder="SBI, Main Branch"></div>
-      <div class="field"><label>Cartage (₹) Labour & others</label><input type="number" id="cartage" value="0" step="1"></div>
+      <div class="field"><label>Cartage (₹)</label><input type="number" id="cartage" value="0" step="1"></div>
     </div>
-
     <div style="font-weight:800; margin-bottom:6px;">📦 Invoice Items</div>
     <div class="items-wrapper">
       <table class="items-table" id="itemsTable">
@@ -392,21 +368,20 @@
       </table>
     </div>
     <button type="button" class="add-row-btn" id="addRowBtn">+ Add Product / Service</button>
-
     <div class="action-buttons">
       <button class="btn-primary" id="generateInvoiceBtn">💾 Generate & Save Invoice</button>
       <button class="btn-primary btn-secondary" id="resetFormBtn">⟳ Reset Fields</button>
     </div>
-
     <div id="invoicePreview" class="invoice-preview" style="display: none;"></div>
   </div>
 
   <!-- VIEW TAB -->
   <div id="viewTab" class="tab-pane">
-    <div class="form-grid">
-      <div class="field"><label>Enter Invoice Number</label><input type="text" id="searchInvNo" placeholder="e.g., INV-26/001"></div>
+    <div class="search-box">
+      <input type="text" id="searchCustomerName" placeholder="🔍 Search by customer name...">
+      <button class="btn-primary" id="refreshInvoiceList">🔄 Refresh</button>
     </div>
-    <button class="btn-primary" id="fetchInvoiceBtn">🔎 Load Invoice</button>
+    <div id="invoiceListContainer">Loading invoices...</div>
     <div id="pastInvoiceContainer" style="margin-top: 30px;"></div>
   </div>
 </div>
@@ -414,11 +389,11 @@
 <script>
   // ---------- CONFIGURATION ----------
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhNiImSpG2FhBpV5_qhxarSn3pg8C8elMVQP3FJeyQtOTNL_kOd6OaBxSuzTsZVvRHlA/exec";
-  const USE_MOCK = false;
-
+  
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
+  let allInvoices = []; // store for search
 
-  // Number to Indian Rupees words
+  // Helper: number to words (same as before)
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -446,6 +421,7 @@
     return result + " Only";
   }
 
+  // Render items table (same)
   function renderItemsTable() {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
@@ -469,16 +445,13 @@
     attachItemEvents();
     updateAllAmounts();
   }
-
   function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
   function attachItemEvents() {
     document.querySelectorAll('.item-desc').forEach(inp => inp.addEventListener('input', function(e) { let idx = parseInt(this.dataset.idx); itemsArray[idx].desc = this.value; updateAmount(idx); triggerPreviewUpdate(); }));
     document.querySelectorAll('.item-hsn').forEach(inp => inp.addEventListener('input', function(e) { let idx = parseInt(this.dataset.idx); itemsArray[idx].hsn = this.value; triggerPreviewUpdate(); }));
     document.querySelectorAll('.item-qty').forEach(inp => inp.addEventListener('input', function(e) { let idx = parseInt(this.dataset.idx); itemsArray[idx].qty = parseFloat(this.value) || 0; updateAmount(idx); triggerPreviewUpdate(); }));
     document.querySelectorAll('.item-rate').forEach(inp => inp.addEventListener('input', function(e) { let idx = parseInt(this.dataset.idx); itemsArray[idx].rate = parseFloat(this.value) || 0; updateAmount(idx); triggerPreviewUpdate(); }));
   }
-
   function updateAmount(idx) {
     let qty = itemsArray[idx].qty || 0;
     let rate = itemsArray[idx].rate || 0;
@@ -487,20 +460,16 @@
     const span = document.querySelector(`.item-amount[data-idx="${idx}"]`);
     if (span) span.innerText = amt.toFixed(2);
   }
-
   function updateAllAmounts() { itemsArray.forEach((_, i) => updateAmount(i)); }
   function removeItemRow(idx) { if (itemsArray.length <= 1) return; itemsArray.splice(idx, 1); renderItemsTable(); triggerPreviewUpdate(); }
   function addNewItem() { itemsArray.push({ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }); renderItemsTable(); triggerPreviewUpdate(); }
   function getItemsArrayFromState() { return itemsArray.filter(it => it.desc.trim() !== "").map((it, i) => ({ sno: i+1, desc: it.desc, hsn: it.hsn, qty: it.qty, rate: it.rate, amount: (it.qty * it.rate).toFixed(2) })); }
-
   function updateStateCode() {
     const stateName = document.getElementById('stateName').value.trim().toLowerCase();
-    const codeField = document.getElementById('stateCode');
-    if (stateName.includes('delhi')) codeField.value = '07';
-    else codeField.value = '';
+    if (stateName.includes('delhi')) document.getElementById('stateCode').value = '07';
+    else document.getElementById('stateCode').value = '';
     triggerPreviewUpdate();
   }
-
   let previewTimeout;
   function triggerPreviewUpdate() {
     if (previewTimeout) clearTimeout(previewTimeout);
@@ -509,12 +478,10 @@
       if (previewDiv.style.display === 'block') generatePreviewOnly();
     }, 300);
   }
-
   function generatePreviewOnly() {
     const invData = collectInvoiceData();
     if (invData) document.getElementById('invoicePreview').innerHTML = buildInvoiceHTML(invData);
   }
-
   function collectInvoiceData() {
     const customerName = document.getElementById('customerName').value.trim();
     if (!customerName) return null;
@@ -524,8 +491,7 @@
     let stateCodeVal = document.getElementById('stateCode').value.trim();
     const isDelhi = (stateCodeVal === "07");
     let cgst=0, sgst=0, igst=0;
-    if(isDelhi){ cgst = taxable*0.09; sgst = taxable*0.09; } 
-    else { igst = taxable*0.18; }
+    if(isDelhi){ cgst = taxable*0.09; sgst = taxable*0.09; } else { igst = taxable*0.18; }
     const cartage = parseFloat(document.getElementById('cartage').value) || 0;
     const grandTotal = taxable + cgst + sgst + igst + cartage;
     let invoiceNo = document.getElementById('invoiceNoManual').value.trim();
@@ -544,8 +510,6 @@
       cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items
     };
   }
-
-  // FIXED: removed NonNullList garbage
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
@@ -556,7 +520,7 @@
     let gstBreakdown = '';
     if (isDelhi) {
       gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
-                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
+                       <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
       gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
@@ -568,7 +532,6 @@
           <div class="brand-tag">PROJECTORS | VIDEO CAMERA | LED VIDEO WALLS | SPARE PARTS</div>
           <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>📞 +91 9711166056  ✉ avtechnologyy@gmail.com</div>
         </div>
-
         <div class="info-grid-pro">
           <div class="info-left">
             <div class="info-row"><span class="info-label">M/S (Customer):</span><span class="info-value customer-name-cap">${customerName}</span></div>
@@ -588,120 +551,138 @@
             <div class="info-row"><span class="info-label">Bank/Branch:</span><span class="info-value">${bankBranch || '—'}</span></div>
           </div>
         </div>
-
-        <table class="items-table-preview">
-          <thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead>
-          <tbody>${itemsRows}</tbody>
-        </table>
-
+        <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
-        
-        <table style="width:100%; margin:12px 0; border-collapse:collapse;">
-          ${gstBreakdown}
-          <tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr>
-          <tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr>
-        </table>
-        
-        <div class="terms">
-          <strong>TERMS & CONDITIONS:</strong><br>
-          1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>
-          2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>
-          3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>
-          CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT
-        </div>
-        
-        <div class="stamp-sign-wrapper">
-          <div class="realistic-stamp">
-            <span>🔹 AV TECHNOLOGY</span>
-            <span>DELHI • APPROVED</span>
-          </div>
-          <div class="signature-box">
-            FOR AV TECHNOLOGY<br>
-            <span style="border-top:2px dashed #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>
-            AUTHORISED SIGNATORY
-          </div>
-        </div>
+        <table style="width:100%; margin:12px 0;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
+        <div class="terms"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
+        <div class="stamp-sign-wrapper"><div class="realistic-stamp"><span>🔹 AV TECHNOLOGY</span><span>DELHI • APPROVED</span></div><div class="signature-box">FOR AV TECHNOLOGY<br><span style="border-top:2px dashed #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>AUTHORISED SIGNATORY</div></div>
         <div style="text-align:center; font-size:8px; margin-top:12px;">E. & O. E.</div>
       </div>`;
   }
 
-  // PDF download using html2pdf
-  async function downloadPDF() {
-    const previewDiv = document.getElementById('invoicePreview');
-    if (!previewDiv || previewDiv.style.display !== 'block') {
-      alert("Please generate an invoice first.");
-      return;
-    }
-    let element = document.getElementById('invoiceContent');
-    if (!element) {
-      const invData = collectInvoiceData();
-      if (!invData) { alert("No invoice data. Please fill customer and items."); return; }
-      previewDiv.innerHTML = buildInvoiceHTML(invData);
-      element = document.getElementById('invoiceContent');
-      if (!element) { alert("Error generating invoice content."); return; }
-    }
-    element.style.display = 'block';
-    await new Promise(r => setTimeout(r, 200));
-    const opt = {
-      margin: [0.2, 0.2, 0.2, 0.2],
-      filename: `Invoice_${document.getElementById('invoiceNoManual').value || 'AV'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
+  // Auto increment invoice number from sheet
+  async function setNextInvoiceNumber() {
     try {
-      await html2pdf().set(opt).from(element).save();
-    } catch(e) {
-      alert("PDF download failed: " + e.message + "\nTry using the Print button instead.");
-    }
-  }
-
-  // Browser print (also saves as PDF)
-  function printInvoice() {
-    const previewDiv = document.getElementById('invoicePreview');
-    if (!previewDiv || previewDiv.style.display !== 'block') {
-      alert("Please generate an invoice first.");
-      return;
-    }
-    window.print();
-  }
-
-  async function shareAsPDF() {
-    const previewDiv = document.getElementById('invoicePreview');
-    if (!previewDiv || previewDiv.style.display !== 'block') {
-      alert("Generate invoice first");
-      return;
-    }
-    let element = document.getElementById('invoiceContent');
-    if (!element) {
-      const invData = collectInvoiceData();
-      if (!invData) { alert("No invoice data."); return; }
-      previewDiv.innerHTML = buildInvoiceHTML(invData);
-      element = document.getElementById('invoiceContent');
-    }
-    await new Promise(r => setTimeout(r, 200));
-    const opt = {
-      margin: [0.2, 0.2, 0.2, 0.2],
-      filename: `Invoice_${Date.now()}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    try {
-      const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], 'invoice.pdf', {type: 'application/pdf'})] })) {
-        const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
-        await navigator.share({ files: [file], title: 'AV TECHNOLOGY Invoice' });
+      const res = await fetch(`${SCRIPT_URL}?action=getLast`);
+      const lastInv = await res.text();
+      if (lastInv && lastInv !== "INV-26/000") {
+        const match = lastInv.match(/INV-(\d{2})\/(\d{3})/);
+        if (match) {
+          let year = match[1];
+          let num = parseInt(match[2]);
+          let currentYear = new Date().getFullYear().toString().slice(-2);
+          if (year !== currentYear) {
+            document.getElementById('invoiceNoManual').value = `INV-${currentYear}/001`;
+          } else {
+            let nextNum = (num + 1).toString().padStart(3, '0');
+            document.getElementById('invoiceNoManual').value = `INV-${currentYear}/${nextNum}`;
+          }
+        } else {
+          document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
+        }
       } else {
-        alert("Share not supported, you can download PDF and share manually.");
+        document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
       }
-    } catch(e) { alert("Share failed: " + e.message); }
+    } catch(e) {
+      document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
+    }
   }
 
+  // PDF and Print functions
+  async function downloadPDF(elementId, filename) {
+    let element = document.getElementById(elementId);
+    if (!element) return alert("No invoice to export");
+    await new Promise(r => setTimeout(r, 200));
+    const opt = { margin: [0.2,0.2,0.2,0.2], filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+    try { await html2pdf().set(opt).from(element).save(); } catch(e) { alert("PDF error: "+e.message); }
+  }
+  function printElement(elementId) {
+    const originalTitle = document.title;
+    const printContents = document.getElementById(elementId).cloneNode(true);
+    const popup = window.open('', '_blank');
+    popup.document.write('<html><head><title>Print Invoice</title><link rel="stylesheet" href="data:text/css,' + encodeURIComponent(Array.from(document.styleSheets).map(sheet => { try { return Array.from(sheet.cssRules || []).map(rule => rule.cssText).join(''); } catch(e) { return ''; } }).join('')) + '"></head><body>' + printContents.outerHTML + '</body></html>');
+    popup.document.close();
+    popup.print();
+  }
+
+  // Load last 10 invoices
+  async function loadInvoiceList() {
+    document.getElementById('invoiceListContainer').innerHTML = "Loading...";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getAll`);
+      const invoices = await res.json();
+      allInvoices = invoices.slice(-10).reverse();
+      renderInvoiceList(allInvoices);
+    } catch(e) {
+      document.getElementById('invoiceListContainer').innerHTML = "Failed to load invoices: " + e.message;
+    }
+  }
+  function renderInvoiceList(invoices) {
+    const container = document.getElementById('invoiceListContainer');
+    if (!invoices.length) { container.innerHTML = "No invoices found."; return; }
+    let html = '<div class="invoice-list"><h3>📋 Last 10 Invoices</h3>';
+    invoices.forEach(inv => {
+      html += `
+        <div class="invoice-card">
+          <div class="invoice-card-header">
+            <div><strong>${inv.invoiceNo}</strong> | ${inv.customerName} | ₹ ${inv.grandTotal}</div>
+            <div class="invoice-actions">
+              <button onclick="viewInvoice('${inv.invoiceNo}')">👁️ View</button>
+              <button onclick="printInvoiceFromList('${inv.invoiceNo}')">🖨️ Print</button>
+              <button onclick="downloadPDFFromList('${inv.invoiceNo}')">📄 PDF</button>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+  async function viewInvoice(invoiceNo) {
+    const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
+    const data = await res.json();
+    if (data === "NOT_FOUND") { alert("Not found"); return; }
+    const html = buildInvoiceHTML(data);
+    document.getElementById('pastInvoiceContainer').innerHTML = html;
+  }
+  async function printInvoiceFromList(invoiceNo) {
+    const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
+    const data = await res.json();
+    if (data === "NOT_FOUND") return;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = buildInvoiceHTML(data);
+    const invoiceElem = tempDiv.firstChild;
+    const originalTitle = document.title;
+    const popup = window.open('', '_blank');
+    popup.document.write('<html><head><title>Print Invoice</title><style>body { margin: 0; padding: 0; } @media print { body { margin: 0; } }</style></head><body>' + invoiceElem.outerHTML + '</body></html>');
+    popup.document.close();
+    popup.print();
+  }
+  async function downloadPDFFromList(invoiceNo) {
+    const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invoiceNo)}`);
+    const data = await res.json();
+    if (data === "NOT_FOUND") return;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = buildInvoiceHTML(data);
+    const invoiceElem = tempDiv.firstChild;
+    invoiceElem.id = "tempInvoiceForPDF";
+    document.body.appendChild(invoiceElem);
+    await downloadPDF("tempInvoiceForPDF", `Invoice_${invoiceNo}.pdf`);
+    document.body.removeChild(invoiceElem);
+  }
+  function searchInvoices() {
+    const query = document.getElementById('searchCustomerName').value.trim().toLowerCase();
+    if (!query) renderInvoiceList(allInvoices);
+    else {
+      const filtered = allInvoices.filter(inv => inv.customerName.toLowerCase().includes(query));
+      renderInvoiceList(filtered);
+    }
+  }
+
+  // Save and generate main invoice
   async function saveAndGenerate() {
     const invoiceData = collectInvoiceData();
-    if (!invoiceData) { alert("❌ Please fill Customer Name and at least one product."); return; }
+    if (!invoiceData) { alert("❌ Fill customer and at least one product."); return; }
     const finalHtml = buildInvoiceHTML(invoiceData);
     const previewDiv = document.getElementById('invoicePreview');
     previewDiv.innerHTML = finalHtml;
@@ -712,56 +693,35 @@
       btnDiv.style.marginTop = '20px';
       btnDiv.style.display = 'flex';
       btnDiv.style.gap = '12px';
-      btnDiv.style.flexWrap = 'wrap';
-      btnDiv.innerHTML = `<button class="btn-print action-btn" id="printBtn">🖨️ Print / Save as PDF</button>
-                          <button class="btn-pdf action-btn" id="pdfDownloadBtn">📄 Download PDF</button>
-                          <button class="btn-share action-btn" id="pdfShareBtn">📤 Share PDF</button>`;
+      btnDiv.innerHTML = `<button class="btn-print" id="printBtnMain">🖨️ Print</button>
+                          <button class="btn-pdf" id="pdfDownloadMain">📄 Download PDF</button>`;
       previewDiv.appendChild(btnDiv);
-      document.getElementById('printBtn').addEventListener('click', printInvoice);
-      document.getElementById('pdfDownloadBtn').addEventListener('click', downloadPDF);
-      document.getElementById('pdfShareBtn').addEventListener('click', shareAsPDF);
+      document.getElementById('printBtnMain').addEventListener('click', () => printElement('invoiceContent'));
+      document.getElementById('pdfDownloadMain').addEventListener('click', () => downloadPDF('invoiceContent', `Invoice_${invoiceData.invoiceNo}.pdf`));
     }
-    // Save to Google Sheet
     try {
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify(invoiceData)
-      });
-      alert(`✅ Invoice ${invoiceData.invoiceNo} saved to Google Sheet!`);
-    } catch(e) {
-      alert("Cloud save failed: " + e.message + "\nInvoice is still generated locally.");
-    }
+      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) });
+      alert(`✅ Invoice ${invoiceData.invoiceNo} saved!`);
+      await setNextInvoiceNumber(); // update next number
+    } catch(e) { alert("Save failed but invoice generated locally."); }
   }
 
-  function setDefaultInvoiceNo() {
-    const year = new Date().getFullYear().toString().slice(-2);
-    const existing = document.getElementById('invoiceNoManual').value.trim();
-    if (!existing) document.getElementById('invoiceNoManual').value = `INV-${year}/001`;
-  }
-
-  // Event listeners
-  document.getElementById('addRowBtn').addEventListener('click', addNewItem);
-  document.getElementById('generateInvoiceBtn').addEventListener('click', saveAndGenerate);
-  document.getElementById('resetFormBtn').addEventListener('click', () => location.reload());
-  document.getElementById('stateName').addEventListener('input', updateStateCode);
-  document.getElementById('fetchInvoiceBtn').addEventListener('click', async () => {
-    const invNo = document.getElementById('searchInvNo').value.trim();
-    if(!invNo) return alert("Enter Invoice Number");
-    try {
-      const res = await fetch(`${SCRIPT_URL}?invoiceNo=${encodeURIComponent(invNo)}`);
-      const text = await res.text();
-      if (text === "NOT_FOUND") {
-        document.getElementById('pastInvoiceContainer').innerHTML = "<p style='color:red;'>❌ Invoice not found in Google Sheet.</p>";
-        return;
-      }
-      const data = JSON.parse(text);
-      document.getElementById('pastInvoiceContainer').innerHTML = buildInvoiceHTML(data);
-    } catch(e) {
-      alert("Error fetching: " + e.message);
-    }
-  });
-
+  // Initialization
+  window.onload = async () => {
+    renderItemsTable();
+    updateStateCode();
+    await setNextInvoiceNumber();
+    document.getElementById('deliveryDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('placeSupply').value = "Delhi";
+    document.getElementById('addRowBtn').onclick = addNewItem;
+    document.getElementById('generateInvoiceBtn').onclick = saveAndGenerate;
+    document.getElementById('resetFormBtn').onclick = () => location.reload();
+    document.getElementById('stateName').oninput = updateStateCode;
+    document.getElementById('refreshInvoiceList').onclick = loadInvoiceList;
+    document.getElementById('searchCustomerName').oninput = searchInvoices;
+    await loadInvoiceList();
+  };
+  // Tab switching
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -771,12 +731,12 @@
       else document.getElementById('viewTab').classList.add('active-pane');
     });
   });
-
-  renderItemsTable();
-  updateStateCode();
-  setDefaultInvoiceNo();
-  document.getElementById('deliveryDate').value = new Date().toISOString().split('T')[0];
-  document.getElementById('placeSupply').value = "Delhi";
+  // Expose functions for inline buttons
+  window.viewInvoice = viewInvoice;
+  window.printInvoiceFromList = printInvoiceFromList;
+  window.downloadPDFFromList = downloadPDFFromList;
+  window.printElement = printElement;
+  window.downloadPDF = downloadPDF;
 </script>
 </body>
 </html>
