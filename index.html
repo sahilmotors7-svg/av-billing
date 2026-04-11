@@ -182,7 +182,7 @@
     /* ========== PREMIUM PROFESSIONAL INVOICE STYLES ========== */
     .tax-invoice-title {
       text-align: center;
-      font-size: 28px;
+      font-size: 22px;  /* reduced from 28px */
       font-weight: 800;
       letter-spacing: 2px;
       color: #1f3b4c;
@@ -211,7 +211,7 @@
       color: #2d3e50;
       margin-top: 6px;
     }
-    /* Professional two-column layout: left side (customer first), right side (invoice details) */
+    /* Two-column layout: left side (customer), right side (invoice + extra fields) */
     .info-grid-pro {
       display: flex;
       flex-wrap: wrap;
@@ -284,7 +284,7 @@
       background: #fef9e3;
       font-weight: 800;
     }
-    /* Realistic small stamp with ink effect */
+    /* Realistic small stamp with ink effect + dotted border hint */
     .stamp-sign-wrapper {
       display: flex;
       justify-content: space-between;
@@ -328,12 +328,36 @@
       font-weight: 600;
       font-size: 0.75rem;
     }
+    /* Dotted letter effect: faint dotted pattern in background of stamp area (real bill feel) */
+    .realistic-stamp::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(30,64,175,0.05) 1px, transparent 1px);
+      background-size: 4px 4px;
+      pointer-events: none;
+    }
+    .realistic-stamp {
+      position: relative;
+      overflow: hidden;
+    }
     .terms {
       font-size: 0.68rem;
       background: #fef7e0;
       padding: 10px;
       border-radius: 16px;
       margin: 12px 0;
+    }
+    /* Remove pink color from phone icon */
+    .company-details i, .company-details em {
+      font-style: normal;
+    }
+    .no-pink {
+      color: #2d3e50;
     }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
@@ -526,7 +550,7 @@
     };
   }
 
-  // Professional layout: customer details on left, invoice meta on right
+  // Professional layout with Transport Mode, Cheque, Bank moved to right side
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
@@ -550,7 +574,7 @@
           <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>📞 +91 9711166056  ✉ avtechnologyy@gmail.com</div>
         </div>
 
-        <!-- Professional two-column info -->
+        <!-- Two-column info: Left (customer details) + Right (invoice & extra fields) -->
         <div class="info-grid-pro">
           <div class="info-left">
             <div class="info-row"><span class="info-label">M/S (Customer):</span><span class="info-value customer-name-cap">${customerName}</span></div>
@@ -559,22 +583,22 @@
             <div class="info-row"><span class="info-label">Place of Supply:</span><span class="info-value">${placeSupply || '—'}</span></div>
             <div class="info-row"><span class="info-label">Vehicle No:</span><span class="info-value">${vehicleNo || '—'}</span></div>
             <div class="info-row"><span class="info-label">Delivery Date:</span><span class="info-value">${deliveryDate || '—'}</span></div>
-            <div class="info-row"><span class="info-label">Transport Mode:</span><span class="info-value">${transportMode || '—'}</span></div>
-            <div class="info-row"><span class="info-label">Cheque No:</span><span class="info-value">${chequeNo || '—'}</span></div>
-            <div class="info-row"><span class="info-label">Bank/Branch:</span><span class="info-value">${bankBranch || '—'}</span></div>
           </div>
           <div class="info-right">
             <div class="info-row"><span class="info-label">GSTIN:</span><span class="info-value">07ABIFA3151F1ZS</span></div>
             <div class="info-row"><span class="info-label">STATE CODE:</span><span class="info-value">07</span></div>
             <div class="info-row"><span class="info-label">INVOICE NO:</span><span class="info-value">${invoiceNo}</span></div>
             <div class="info-row"><span class="info-label">DATE:</span><span class="info-value">${invoiceDate}</span></div>
+            <div class="info-row"><span class="info-label">Transport Mode:</span><span class="info-value">${transportMode || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Cheque No:</span><span class="info-value">${chequeNo || '—'}</span></div>
+            <div class="info-row"><span class="info-label">Bank/Branch:</span><span class="info-value">${bankBranch || '—'}</span></div>
           </div>
         </div>
 
         <table class="items-table-preview">
           <thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead>
           <tbody>${itemsRows}</tbody>
-        </table>
+        追赶
 
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
@@ -583,7 +607,7 @@
           ${gstBreakdown}
           <tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr>
           <tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr>
-        </table>
+        追赶
         
         <div class="terms">
           <strong>TERMS & CONDITIONS:</strong><br>
@@ -600,7 +624,7 @@
           </div>
           <div class="signature-box">
             FOR AV TECHNOLOGY<br>
-            <span style="border-top:2px solid #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>
+            <span style="border-top:2px dashed #1f2937; display:inline-block; width:170px; margin-top:6px;"></span><br>
             AUTHORISED SIGNATORY
           </div>
         </div>
@@ -608,23 +632,24 @@
       </div>`;
   }
 
-  // Reliable PDF generation with delay to ensure rendering
+  // Reliable PDF generation with delay and element verification
   async function downloadPDF() {
     const previewDiv = document.getElementById('invoicePreview');
     if (!previewDiv || previewDiv.style.display !== 'block') {
       alert("Please generate an invoice first.");
       return;
     }
-    // Ensure invoiceContent exists
     let element = document.getElementById('invoiceContent');
     if (!element) {
-      // fallback: re-generate preview content
       const invData = collectInvoiceData();
       if (!invData) { alert("No invoice data. Please fill customer and items."); return; }
       previewDiv.innerHTML = buildInvoiceHTML(invData);
       element = document.getElementById('invoiceContent');
       if (!element) { alert("Error generating invoice content."); return; }
     }
+    // Force reflow and wait for fonts/images
+    element.style.display = 'block';
+    await new Promise(r => setTimeout(r, 200));
     const opt = {
       margin: [0.2, 0.2, 0.2, 0.2],
       filename: `Invoice_${document.getElementById('invoiceNoManual').value || 'AV'}.pdf`,
@@ -633,8 +658,6 @@
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     try {
-      // Small delay to ensure styles are applied
-      await new Promise(r => setTimeout(r, 100));
       await html2pdf().set(opt).from(element).save();
     } catch(e) {
       alert("PDF generation failed: " + e.message);
@@ -654,6 +677,7 @@
       previewDiv.innerHTML = buildInvoiceHTML(invData);
       element = document.getElementById('invoiceContent');
     }
+    await new Promise(r => setTimeout(r, 200));
     const opt = {
       margin: [0.2, 0.2, 0.2, 0.2],
       filename: `Invoice_${Date.now()}.pdf`,
@@ -662,7 +686,6 @@
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     try {
-      await new Promise(r => setTimeout(r, 100));
       const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], 'invoice.pdf', {type: 'application/pdf'})] })) {
         const file = new File([pdfBlob], 'invoice.pdf', { type: 'application/pdf' });
@@ -744,4 +767,3 @@
 </script>
 </body>
 </html>
-```
