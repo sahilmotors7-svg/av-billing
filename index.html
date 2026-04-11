@@ -143,16 +143,21 @@
       padding: 20px 24px;
       border: 1px solid #e9eef3;
     }
-    /* PRINT STYLES - perfect A4 PDF */
+    /* PRINT STYLES - A4 single page, no extra headers */
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
       .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, #previewActionButtons, .invoice-list, .no-print {
         display: none !important;
       }
-      .invoice-preview { margin: 0; padding: 0.2in; box-shadow: none; border: none; }
-      @page { size: A4; margin: 0.2in; }
+      .invoice-preview { margin: 0; padding: 0.15in; box-shadow: none; border: none; }
+      @page { size: A4; margin: 0.15in; }
       body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      /* Prevent page breaks inside critical sections */
+      .brand-header, .info-grid-pro, .items-table-preview, .word-amount, .terms, .stamp-sign-wrapper {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
     }
     /* Premium invoice styles */
     .tax-invoice-title {
@@ -256,7 +261,6 @@
       border-top: 1px solid #e2e8f0;
       padding-top: 20px;
     }
-    /* SVG stamp - realistic, random tilt via inline style */
     .stamp-svg {
       width: 95px;
       height: 95px;
@@ -317,6 +321,13 @@
       padding: 10px;
       border-radius: 40px;
       border: 1px solid #cbdbe6;
+    }
+    /* Compact mode for many items – ensures single page */
+    @media print {
+      .items-table-preview td, .items-table-preview th { padding: 4px 3px; font-size: 0.7rem; }
+      .info-row { margin-bottom: 6px; font-size: 0.75rem; }
+      .brand-name { font-size: 1.5rem; }
+      .stamp-svg { width: 75px; height: 75px; }
     }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
@@ -381,9 +392,9 @@
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
   let allInvoices = [];
 
-  // Helper: random tilt for stamp (different every time)
+  // Helper: random tilt for stamp
   function getRandomStampTransform() {
-    const tilt = (Math.random() * 14) - 7; // -7deg to +7deg
+    const tilt = (Math.random() * 14) - 7;
     const shiftX = (Math.random() * 8) - 4;
     const shiftY = (Math.random() * 8) - 4;
     const scale = 0.97 + (Math.random() * 0.06);
@@ -508,24 +519,29 @@
     };
   }
 
-  // Generate full invoice HTML with inline SVG stamp (no external image)
+  // Build invoice HTML - NO NonNullList, NO stray text
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList></td><td>₹ ${it.amount}NonNullList<itemList></tr>`;
+      itemsRows += `<tr>
+        <td>${it.sno}</td>
+        <td>${it.desc}</td>
+        <td>${it.hsn}</td>
+        <td>${it.qty}</td>
+        <td>₹ ${parseFloat(it.rate).toFixed(2)}</td>
+        <td>₹ ${it.amount}</td>
+      </tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
-      gstBreakdown = `<tr><td style="text-align:left;">CGST @9%NonNullList<itemList></td><td>₹ ${cgst.toFixed(2)}NonNullList<itemList></tr>
-                      <tr><td style="text-align:left;">SGST @9%NonNullList<itemList></td><td>₹ ${sgst.toFixed(2)}NonNullList<itemList></tr>`;
+      gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
+                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
-      gstBreakdown = `<tr><td style="text-align:left;">IGST @18%NonNullList<itemList></td><td>₹ ${igst.toFixed(2)}NonNullList<itemList></tr>`;
+      gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
-    // Random transform for stamp
     const stampTransform = getRandomStampTransform();
-    // SVG stamp - realistic blue circular stamp with text
     const stampSVG = `
       <svg class="stamp-svg" viewBox="0 0 100 100" style="transform: ${stampTransform};">
         <circle cx="50" cy="50" r="46" fill="none" stroke="#1e3a8a" stroke-width="2.5" stroke-dasharray="3 2"/>
@@ -566,7 +582,7 @@
         <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
-        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong>NonNullList<itemList></td><td><strong>₹ ${cartage.toFixed(2)}</strong>NonNullList<itemList></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong>NonNullList<itemList></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong>NonNullList<itemList></tr></table>
+        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
         <div class="terms"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
         <div class="stamp-sign-wrapper">
           <div style="display:inline-block;">${stampSVG}</div>
@@ -580,7 +596,7 @@
       </div>`;
   }
 
-  // Auto increment invoice number from sheet
+  // Auto increment invoice number
   async function setNextInvoiceNumber() {
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getLast`);
@@ -609,18 +625,17 @@
     }
   }
 
-  // 100% reliable Print / Save as PDF (works on all devices)
+  // Print / Save as PDF (reliable)
   function printInvoice() {
     const element = document.getElementById('invoiceContent');
     if (!element) {
       alert("No invoice to print. Please generate an invoice first.");
       return;
     }
-    // Open print dialog - user can choose "Save as PDF"
     window.print();
   }
 
-  // Load last 10 invoices from Google Sheet
+  // Load last 10 invoices
   async function loadInvoiceList() {
     const container = document.getElementById('invoiceListContainer');
     container.innerHTML = "Loading invoices...";
@@ -668,7 +683,6 @@
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = buildInvoiceHTML(data);
     const invoiceElem = tempDiv.firstChild;
-    // Create a temporary container for printing
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html><head><title>AV TECHNOLOGY Invoice</title><style>${document.querySelector('style').innerHTML} body { margin: 0; padding: 0; }</style></head><body>${invoiceElem.outerHTML}</body></html>
@@ -703,7 +717,6 @@
       previewDiv.appendChild(btnDiv);
       document.getElementById('printBtnMain').addEventListener('click', printInvoice);
     }
-    // Save to Google Sheet silently
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(invoiceData) }).catch(e => console.error("Save error:", e));
     await setNextInvoiceNumber();
   }
