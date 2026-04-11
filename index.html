@@ -257,13 +257,11 @@
       border-top: 1px solid #e2e8f0;
       padding-top: 20px;
     }
-    /* Realistic stamp using image + random tilt + ink spread */
     .realistic-stamp-img {
       width: 95px;
       height: auto;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1)) blur(0.4px);
       opacity: 0.92;
-      transition: none;
     }
     .signature-box {
       text-align: right;
@@ -380,23 +378,21 @@
   // ---------- CONFIGURATION ----------
   // 👇 REPLACE WITH YOUR ACTUAL STAMP IMAGE URL (GitHub raw)
   const STAMP_URL = "https://raw.githubusercontent.com/sahilmotors7-svg/av-billing/main/stamp.png";
-  // Google Apps Script URL (keep yours)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyvvVq0C0FbyoyULkxk9LZZyMayWmNSc-mta2ksFrbnJ6e3qOyWOYoc6rFKCoCeKQQugA/exec";
   
   let itemsArray = [{ desc: "", hsn: "", qty: 1, rate: 0, amount: 0 }];
   let allInvoices = [];
 
-  // Helper: random tilt between -9deg and +9deg, random X/Y shift (±5px)
+  // Helper: random tilt, shift, scale for stamp
   function getRandomStampStyle() {
-    const tilt = (Math.random() * 18) - 9; // -9 to +9
+    const tilt = (Math.random() * 18) - 9; // -9 to +9 deg
     const shiftX = (Math.random() * 10) - 5; // -5px to +5px
     const shiftY = (Math.random() * 10) - 5;
-    // Slight random scale (0.96 to 1.04)
     const scale = 0.96 + (Math.random() * 0.08);
     return `transform: rotate(${tilt}deg) translate(${shiftX}px, ${shiftY}px) scale(${scale});`;
   }
 
-  // Number to words (same as before)
+  // Number to Indian Rupees words
   function numberToWords(num) {
     if (num === 0) return "Zero Rupees Only";
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
@@ -424,7 +420,7 @@
     return result + " Only";
   }
 
-  // Render items table
+  // Items table rendering
   function renderItemsTable() {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
@@ -514,22 +510,21 @@
     };
   }
 
-  // Build invoice HTML with dynamic stamp randomness
+  // BUILD INVOICE HTML - NO NonNullList garbage
   function buildInvoiceHTML(inv) {
     const { items, taxable, cgst, sgst, igst, grandTotal, isDelhi, cartage, customerName, custGstin, invoiceNo, invoiceDate, vehicleNo, deliveryDate, placeSupply, transportMode, stateCode, chequeNo, bankBranch, stateName } = inv;
     const words = numberToWords(grandTotal);
     let itemsRows = '';
     items.forEach(it => {
-      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}NonNullList<itemList></td><td>₹ ${it.amount}NonNullList<itemList></tr>`;
+      itemsRows += `<tr><td>${it.sno}</td><td>${it.desc}</td><td>${it.hsn}</td><td>${it.qty}</td><td>₹ ${parseFloat(it.rate).toFixed(2)}</td><td>₹ ${it.amount}</td></tr>`;
     });
     let gstBreakdown = '';
     if (isDelhi) {
-      gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}NonNullList<itemList></tr>
-                      <tr><td style="text-align:left;">SGST @9%NonNullList<itemList></td><td>₹ ${sgst.toFixed(2)}NonNullList<itemList></tr>`;
+      gstBreakdown = `<tr><td style="text-align:left;">CGST @9%</td><td>₹ ${cgst.toFixed(2)}</td></tr>
+                      <tr><td style="text-align:left;">SGST @9%</td><td>₹ ${sgst.toFixed(2)}</td></tr>`;
     } else {
-      gstBreakdown = `<tr><td style="text-align:left;">IGST @18%NonNullList<itemList></td><td>₹ ${igst.toFixed(2)}NonNullList<itemList></tr>`;
+      gstBreakdown = `<tr><td style="text-align:left;">IGST @18%</td><td>₹ ${igst.toFixed(2)}</td></tr>`;
     }
-    // Generate random stamp style (different each time invoice is built)
     const stampStyle = getRandomStampStyle();
     return `
       <div style="font-family:'Segoe UI',Roboto,sans-serif;" id="invoiceContent">
@@ -561,11 +556,11 @@
         <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
-        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong>NonNullList<itemList></td><td><strong>₹ ${cartage.toFixed(2)}</strong>NonNullList<itemList></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong>NonNullList<itemList></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong>NonNullList<itemList></tr></table>
+        <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
         <div class="terms"><strong>TERMS & CONDITIONS:</strong><br>1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.<br>CERTIFIED THAT THE PARTICULARS GIVEN ABOVE ARE TRUE & CORRECT</div>
         <div class="stamp-sign-wrapper">
-          <div class="stamp-container" style="display:inline-block; ${stampStyle}">
-            <img src="${STAMP_URL}" class="realistic-stamp-img" alt="AV TECHNOLOGY STAMP" style="width:95px; height:auto; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15)) blur(0.3px); opacity:0.93;">
+          <div style="display:inline-block; ${stampStyle}">
+            <img src="${STAMP_URL}" class="realistic-stamp-img" alt="AV TECHNOLOGY STAMP" onerror="this.style.display='none'">
           </div>
           <div class="signature-box">
             FOR AV TECHNOLOGY<br>
@@ -602,21 +597,43 @@
         document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
       }
     } catch(e) {
-      console.error(e);
       document.getElementById('invoiceNoManual').value = `INV-${new Date().getFullYear().toString().slice(-2)}/001`;
     }
   }
 
-  // PDF download
+  // RELIABLE PDF DOWNLOAD (no blank page)
   async function downloadPDF(elementId, filename) {
-    let element = document.getElementById(elementId);
-    if (!element) return alert("No invoice to export");
-    await new Promise(r => setTimeout(r, 200));
-    const opt = { margin: [0.2,0.2,0.2,0.2], filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
-    try { await html2pdf().set(opt).from(element).save(); } catch(e) { alert("PDF error: "+e.message); }
+    const element = document.getElementById(elementId);
+    if (!element) {
+      alert("No invoice to export. Please generate an invoice first.");
+      return;
+    }
+    // Wait for any pending rendering
+    await new Promise(r => setTimeout(r, 300));
+    // Clone the element to avoid page interference
+    const clone = element.cloneNode(true);
+    clone.style.display = 'block';
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    document.body.appendChild(clone);
+    const opt = {
+      margin: [0.2, 0.2, 0.2, 0.2],
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    try {
+      await html2pdf().set(opt).from(clone).save();
+    } catch(e) {
+      alert("PDF generation failed: " + e.message);
+    } finally {
+      document.body.removeChild(clone);
+    }
   }
 
-  // Reliable print
+  // Print function
   function printInvoice(elementId) {
     const element = document.getElementById(elementId);
     if (!element) { alert("No invoice to print."); return; }
