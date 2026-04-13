@@ -143,17 +143,16 @@
       padding: 20px 24px;
       border: 1px solid #e9eef3;
     }
-    /* PRINT STYLES - A4 single page, no extra headers */
+    /* Hide form labels and other UI elements when printing */
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, #previewActionButtons, .invoice-list, .no-print, .print-button-container {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, #previewActionButtons, .invoice-list, .no-print, .print-button-container, .items-label {
         display: none !important;
       }
       .invoice-preview { margin: 0; padding: 0.15in; box-shadow: none; border: none; }
       @page { size: A4; margin: 0.15in; }
       body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      /* Prevent page breaks inside critical sections */
       .brand-header, .info-grid-pro, .items-table-preview, .word-amount, .terms, .stamp-sign-wrapper {
         break-inside: avoid;
         page-break-inside: avoid;
@@ -261,7 +260,6 @@
       border-top: 1px solid #e2e8f0;
       padding-top: 20px;
     }
-    /* Stamp container - centred */
     .stamp-container {
       text-align: center;
     }
@@ -331,6 +329,11 @@
       margin-top: 20px;
       text-align: center;
     }
+    /* Black phone icon */
+    .black-phone {
+      color: black;
+      font-style: normal;
+    }
     @media (max-width: 700px) {
       .info-left, .info-right { flex: 1; border-left: none; padding-left: 0; }
       .info-grid-pro { flex-direction: column; }
@@ -361,7 +364,8 @@
       <div class="field"><label>Bank & Branch</label><input type="text" id="bankBranch" placeholder="SBI, Main Branch"></div>
       <div class="field"><label>Cartage (₹)</label><input type="number" id="cartage" value="0" step="1"></div>
     </div>
-    <div style="font-weight:800; margin-bottom:6px;">📦 Invoice Items</div>
+    <!-- Added class "items-label" to hide during print -->
+    <div class="items-label" style="font-weight:800; margin-bottom:6px;">📦 Invoice Items</div>
     <div class="items-wrapper">
       <table class="items-table" id="itemsTable">
         <thead><tr><th>S.No</th><th>PARTICULARS</th><th>HSN CODE</th><th>QTY</th><th>RATE (₹)</th><th>AMOUNT (₹)</th><th></th></tr></thead>
@@ -556,13 +560,15 @@
         </svg>
       </div>
     `;
+    // Replace pink phone icon with black telephone symbol ☎
+    const phoneBlack = "☎";
     return `
       <div style="font-family:'Segoe UI',Roboto,sans-serif;" id="invoiceContent">
         <div style="text-align:center;"><div class="tax-invoice-title">TAX INVOICE</div></div>
         <div class="brand-header">
           <div class="brand-name">AV TECHNOLOGY</div>
           <div class="brand-tag">PROJECTORS | VIDEO CAMERA | LED VIDEO WALLS | SPARE PARTS</div>
-          <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>📞 +91 9711166056  ✉ avtechnologyy@gmail.com</div>
+          <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>${phoneBlack} +91 9711166056  ✉ avtechnologyy@gmail.com</div>
         </div>
         <div class="info-grid-pro">
           <div class="info-left">
@@ -583,7 +589,7 @@
             <div class="info-row"><span class="info-label">Bank/Branch:</span><span class="info-value">${bankBranch || '—'}</span></div>
           </div>
         </div>
-        <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody>追赶
+        <table class="items-table-preview"><thead><tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody>${itemsRows}</tbody></table>
         <div style="text-align:right; font-weight:600;">TAXABLE VALUE: ₹ ${taxable.toFixed(2)}</div>
         <div class="word-amount"><strong>AMOUNT IN WORDS:</strong> ${words}</div>
         <table style="width:100%; margin:12px 0; border-collapse:collapse;">${gstBreakdown}<tr><td style="text-align:left;"><strong>CARTAGE (Labour & others)</strong></td><td><strong>₹ ${cartage.toFixed(2)}</strong></td></tr><tr class="total-row"><td style="text-align:left;"><strong>TOTAL SALE VALUE WITH GST</strong></td><td><strong>₹ ${grandTotal.toFixed(2)}</strong></td></tr></table>
