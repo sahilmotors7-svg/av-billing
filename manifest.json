@@ -1,0 +1,18 @@
+{
+  "name": "AV TECHNOLOGY - Tax Invoice System",
+  "short_name": "AV TECH",
+  "description": "Professional Tax Invoice Generator and Management System for AV Technology",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef2f8",
+  "theme_color": "#0f3b5c",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230f3b5c'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold' font-size='180'>AV</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
