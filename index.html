@@ -11,6 +11,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>AV TECHNOLOGY | Professional Tax Invoice</title>
   <link rel="manifest" href="manifest.json">
+  <!-- Client-side High-Definition Smart PDF Engines -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -359,7 +362,8 @@
       box-shadow: 0 4px 12px rgba(30, 74, 118, 0.2);
     }
     .btn-secondary { background: #4a5568; }
-    .btn-print { background: #2c6e2c; box-shadow: 0 4px 12px rgba(44, 110, 44, 0.3); }
+    .btn-print { background: #2c6e2c; }
+    .btn-dlpdf { background: #0284c7; color: white; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
     .btn-eway { background: #d97706; color: white; }
 
     .invoice-preview {
@@ -375,7 +379,7 @@
     @media print {
       body { background: white; padding: 0; margin: 0; }
       .app-container { max-width: 100%; box-shadow: none; border-radius: 0; border: none; }
-      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, .btn-eway, #previewActionButtons, .invoice-list, .no-print, .print-button-container, .items-label, .live-summary-card, .edit-mode-banner, .auth-overlay, .pwa-install-banner, .footer-sync-bar {
+      .tabs, .action-buttons, .add-row-btn, .remove-row, .tab-btn, .form-grid, .items-wrapper, .btn-primary, .btn-print, .btn-dlpdf, .btn-eway, #previewActionButtons, .invoice-list, .no-print, .print-button-container, .items-label, .live-summary-card, .edit-mode-banner, .auth-overlay, .pwa-install-banner, .footer-sync-bar {
         display: none !important;
       }
       .invoice-preview { margin: 0; padding: 0.15in; box-shadow: none; border: none; }
@@ -1115,7 +1119,8 @@
       previewDiv.appendChild(btnDiv);
     }
     btnDiv.innerHTML = `
-      <button class="btn-primary btn-print" onclick="window.printInvoice()">📄 Save / Download A4 PDF Document</button>
+      <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invData.invoiceNo}')">📥 Download PDF File Directly</button>
+      <button class="btn-primary btn-print" onclick="window.printInvoice()">🖨️ Print Invoice</button>
       <button class="btn-primary btn-eway" onclick="exportEwayBillJson('${invData.invoiceNo}')">🚛 Export E-Way Bill JSON</button>
     `;
   }
@@ -1156,11 +1161,76 @@
     }
   }
 
-  // Print / Save as PDF Invoice (Native Browser A4 Vector Generator)
+  // Print Invoice
   function printInvoice() {
     const element = document.getElementById('invoiceContent');
     if (!element) { alert("No invoice to print. Please generate an invoice first."); return; }
     window.print();
+  }
+
+  // SMART DIRECT 1-CLICK PDF FILE DOWNLOAD (NO PRINT DIALOG SHEET)
+  async function downloadPdfSmart(invoiceNo) {
+    let inv = null;
+    if (invoiceNo) {
+      inv = allInvoices.find(i => i.invoiceNo && i.invoiceNo.trim().toUpperCase() === invoiceNo.trim().toUpperCase());
+    }
+    if (!inv) inv = collectInvoiceData();
+    if (!inv) { alert("❌ Invoice data not found"); return; }
+
+    const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : null;
+    if (btn) btn.innerText = "⏳ Downloading PDF...";
+
+    try {
+      // 1. Create a dedicated hidden container formatted at standard A4 794px width
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.position = 'fixed';
+      pdfContainer.style.top = '0';
+      pdfContainer.style.left = '0';
+      pdfContainer.style.width = '794px';
+      pdfContainer.style.background = '#ffffff';
+      pdfContainer.style.zIndex = '-9999';
+      pdfContainer.style.opacity = '0';
+      pdfContainer.innerHTML = buildInvoiceHTML(inv);
+      document.body.appendChild(pdfContainer);
+
+      const invoiceElem = pdfContainer.querySelector('#invoiceContent');
+      
+      // Wait 80ms for layout and SVG rendering
+      await new Promise(r => setTimeout(r, 80));
+
+      // 2. Render high-res crisp canvas
+      const canvas = await html2canvas(invoiceElem, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: 794
+      });
+
+      pdfContainer.remove();
+
+      // 3. Construct A4 PDF Document
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, Math.min(imgHeight, pageHeight));
+      
+      const cleanNo = inv.invoiceNo.replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `Invoice_${cleanNo}.pdf`;
+      pdf.save(fileName);
+
+      alert(`✅ ${fileName} downloaded directly to your device!`);
+    } catch(err) {
+      console.error("Smart PDF download error:", err);
+      printInvoiceFromList(invoiceNo);
+    } finally {
+      if (btn) btn.innerText = "📥 Download PDF File Directly";
+    }
   }
 
   // Export E-Way Bill JSON (Official NIC Schema compliant)
@@ -1342,8 +1412,10 @@
           <div class="invoice-card-header">
             <div><strong>${inv.invoiceNo}</strong> | ${escapeHtml(inv.customerName)} | ₹ ${parseFloat(inv.grandTotal).toFixed(2)} ${isLatest ? '<span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:12px; font-size:0.68rem; font-weight:bold; margin-left:6px;">LATEST</span>' : ''}</div>
             <div class="invoice-actions">
-              <button onclick="viewInvoice('${inv.invoiceNo}')">👁️ View / Print PDF</button>
+              <button onclick="viewInvoice('${inv.invoiceNo}')">👁️ View</button>
               <button onclick="editInvoice('${inv.invoiceNo}')">✏️ Edit</button>
+              <button onclick="downloadPdfSmart('${inv.invoiceNo}')" style="background:#0284c7; color:white;">📥 Download PDF</button>
+              <button onclick="printInvoiceFromList('${inv.invoiceNo}')">🖨️ Print</button>
               ${isLatest ? `<button onclick="deleteInvoice('${inv.invoiceNo}')" style="background:#b91c1c; color:white;" title="Delete recent bill">🗑️ Delete Recent</button>` : ''}
             </div>
           </div>
@@ -1367,7 +1439,8 @@
     btnDiv.style.flexWrap = 'wrap';
     btnDiv.style.gap = '12px';
     btnDiv.innerHTML = `
-      <button class="btn-primary btn-print" onclick="window.printInvoice()">📄 Save / Download A4 PDF Document</button>
+      <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invoiceNo}')">📥 Download PDF File Directly</button>
+      <button class="btn-primary btn-print" onclick="window.printInvoice()">🖨️ Print Invoice</button>
       <button class="btn-primary btn-eway" onclick="exportEwayBillJson('${invoiceNo}')">🚛 Export E-Way Bill JSON</button>
     `;
     container.appendChild(btnDiv);
@@ -1430,6 +1503,20 @@
     location.reload();
   }
 
+  async function printInvoiceFromList(invoiceNo) {
+    const inv = allInvoices.find(i => i.invoiceNo === invoiceNo);
+    if (!inv) { alert("Invoice not found"); return; }
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = buildInvoiceHTML(inv);
+    const invoiceElem = tempDiv.firstChild;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html><head><title>AV TECHNOLOGY Invoice</title><style>${document.querySelector('style').innerHTML} body { margin: 0; padding: 0; }</style></head><body>${invoiceElem.outerHTML}</body></html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
   function searchInvoices() {
     const query = document.getElementById('searchCustomerName').value.trim().toLowerCase();
     if (!query) renderInvoiceList(allInvoices.slice(0, 15));
@@ -1473,10 +1560,12 @@
 
   // Global exports
   window.printInvoice = printInvoice;
+  window.downloadPdfSmart = downloadPdfSmart;
   window.exportEwayBillJson = exportEwayBillJson;
   window.deleteInvoice = deleteInvoice;
   window.viewInvoice = viewInvoice;
   window.editInvoice = editInvoice;
+  window.printInvoiceFromList = printInvoiceFromList;
   window.forceAppUpdate = forceAppUpdate;
 
   // Initialization
