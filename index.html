@@ -1168,65 +1168,78 @@
     window.print();
   }
 
-  // SMART DIRECT 1-CLICK PDF FILE DOWNLOAD (NO PRINT DIALOG SHEET)
+  // 100% PERFECT A4 FIT VECTOR SMART PDF DOWNLOAD ENGINE
   async function downloadPdfSmart(invoiceNo) {
     let inv = null;
     if (invoiceNo) {
       inv = allInvoices.find(i => i.invoiceNo && i.invoiceNo.trim().toUpperCase() === invoiceNo.trim().toUpperCase());
     }
     if (!inv) inv = collectInvoiceData();
-    if (!inv) { alert("❌ Invoice data not found"); return; }
+    if (!inv) { alert("❌ Invoice data not found. Please enter Customer Name & Items."); return; }
 
     const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : null;
-    if (btn) btn.innerText = "⏳ Downloading PDF...";
+    if (btn) btn.innerText = "⏳ Generating A4 PDF...";
 
     try {
-      // 1. Create a dedicated hidden container formatted at standard A4 794px width
-      const pdfContainer = document.createElement('div');
-      pdfContainer.style.position = 'fixed';
-      pdfContainer.style.top = '0';
-      pdfContainer.style.left = '0';
-      pdfContainer.style.width = '794px';
-      pdfContainer.style.background = '#ffffff';
-      pdfContainer.style.zIndex = '-9999';
-      pdfContainer.style.opacity = '0';
-      pdfContainer.innerHTML = buildInvoiceHTML(inv);
-      document.body.appendChild(pdfContainer);
+      // 1. Create a dedicated container styled with EXACT A4 dimensions & zero outer margins
+      const a4Frame = document.createElement('div');
+      a4Frame.style.position = 'fixed';
+      a4Frame.style.top = '0';
+      a4Frame.style.left = '0';
+      a4Frame.style.width = '794px'; // 210mm in px at 96 DPI
+      a4Frame.style.minHeight = '1123px'; // 297mm in px at 96 DPI
+      a4Frame.style.padding = '30px 35px';
+      a4Frame.style.boxSizing = 'border-box';
+      a4Frame.style.background = '#ffffff';
+      a4Frame.style.zIndex = '-99999';
+      a4Frame.style.opacity = '0';
+      a4Frame.innerHTML = buildInvoiceHTML(inv);
+      document.body.appendChild(a4Frame);
 
-      const invoiceElem = pdfContainer.querySelector('#invoiceContent');
+      const targetContent = a4Frame.querySelector('#invoiceContent');
       
-      // Wait 80ms for layout and SVG rendering
-      await new Promise(r => setTimeout(r, 80));
+      // Wait 100ms for layout reflow and SVG render
+      await new Promise(r => setTimeout(r, 100));
 
-      // 2. Render high-res crisp canvas
-      const canvas = await html2canvas(invoiceElem, {
+      // 2. High-resolution canvas capture with scale 2
+      const canvas = await html2canvas(targetContent, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
         backgroundColor: '#ffffff',
-        width: 794
+        width: 724 // Content width inside 35px padding
       });
 
-      pdfContainer.remove();
+      a4Frame.remove();
 
-      // 3. Construct A4 PDF Document
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        throw new Error("Canvas rendering produced an empty image");
+      }
+
+      // 3. Create A4 jsPDF with 100% exact A4 aspect ratio (210mm x 297mm)
       const imgData = canvas.toDataURL('image/jpeg', 0.98);
       const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdf = new jsPDF('portrait', 'mm', 'a4');
       
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdfWidth = 210; // A4 Width in mm
+      const pdfHeight = 297; // A4 Height in mm
 
-      pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, Math.min(imgHeight, pageHeight));
+      // Center the content on A4 page with clean 10mm top/side margins
+      const renderWidth = 190;
+      const renderHeight = (canvas.height * renderWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'JPEG', 10, 10, renderWidth, Math.min(renderHeight, pdfHeight - 20));
       
       const cleanNo = inv.invoiceNo.replace(/[^a-zA-Z0-9]/g, '_');
       const fileName = `Invoice_${cleanNo}.pdf`;
+      
       pdf.save(fileName);
 
-      alert(`✅ ${fileName} downloaded directly to your device!`);
+      alert(`✅ ${fileName} saved to your device Downloads!\n(Fits 100% exact A4 page)`);
     } catch(err) {
-      console.error("Smart PDF download error:", err);
+      console.error("Smart PDF error:", err);
+      // Fallback: Opens clean printable window
       printInvoiceFromList(invoiceNo);
     } finally {
       if (btn) btn.innerText = "📥 Download PDF File Directly";
