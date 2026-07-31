@@ -1119,7 +1119,7 @@
       previewDiv.appendChild(btnDiv);
     }
     btnDiv.innerHTML = `
-      <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invData.invoiceNo}')">📥 Download PDF File Directly</button>
+      <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invData.invoiceNo}')">📄 Download & Share A4 PDF</button>
       <button class="btn-primary btn-print" onclick="window.printInvoice()">🖨️ Print Invoice</button>
       <button class="btn-primary btn-eway" onclick="exportEwayBillJson('${invData.invoiceNo}')">🚛 Export E-Way Bill JSON</button>
     `;
@@ -1168,7 +1168,7 @@
     window.print();
   }
 
-  // 100% PERFECT A4 FIT VECTOR SMART PDF DOWNLOAD ENGINE
+  // 3-TIER ZERO-FAIL A4 PDF GENERATION & MOBILE SHARE ENGINE
   async function downloadPdfSmart(invoiceNo) {
     let inv = null;
     if (invoiceNo) {
@@ -1181,9 +1181,9 @@
     if (btn) btn.innerText = "⏳ Generating A4 PDF...";
 
     try {
-      // 1. Create a dedicated container styled with EXACT A4 dimensions & zero outer margins
+      // 1. Create a dedicated container styled with EXACT A4 dimensions in DOM flow
       const a4Frame = document.createElement('div');
-      a4Frame.style.position = 'fixed';
+      a4Frame.style.position = 'absolute';
       a4Frame.style.top = '0';
       a4Frame.style.left = '0';
       a4Frame.style.width = '794px'; // 210mm in px at 96 DPI
@@ -1191,15 +1191,16 @@
       a4Frame.style.padding = '30px 35px';
       a4Frame.style.boxSizing = 'border-box';
       a4Frame.style.background = '#ffffff';
-      a4Frame.style.zIndex = '-99999';
-      a4Frame.style.opacity = '0';
+      a4Frame.style.zIndex = '-1';
+      a4Frame.style.visibility = 'visible';
+      a4Frame.style.pointerEvents = 'none';
       a4Frame.innerHTML = buildInvoiceHTML(inv);
       document.body.appendChild(a4Frame);
 
       const targetContent = a4Frame.querySelector('#invoiceContent');
       
-      // Wait 100ms for layout reflow and SVG render
-      await new Promise(r => setTimeout(r, 100));
+      // Wait 120ms for layout reflow and SVG render
+      await new Promise(r => setTimeout(r, 120));
 
       // 2. High-resolution canvas capture with scale 2
       const canvas = await html2canvas(targetContent, {
@@ -1233,16 +1234,36 @@
       
       const cleanNo = inv.invoiceNo.replace(/[^a-zA-Z0-9]/g, '_');
       const fileName = `Invoice_${cleanNo}.pdf`;
-      
+      const pdfBlob = pdf.output('blob');
+
+      // TIER 1: Native Mobile Web Share API (Opens Phone's Native Save / Share Sheet)
+      const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: `AV TECHNOLOGY Invoice ${inv.invoiceNo}`,
+            text: `AV TECHNOLOGY Tax Invoice ${inv.invoiceNo} for ${inv.customerName}`
+          });
+          return;
+        } catch(shareErr) {
+          if (shareErr.name !== 'AbortError') {
+            console.log("Share skipped, falling back to direct save:", shareErr);
+          } else {
+            return; // User closed share sheet intentionally
+          }
+        }
+      }
+
+      // TIER 2: Direct File Download
       pdf.save(fileName);
 
-      alert(`✅ ${fileName} saved to your device Downloads!\n(Fits 100% exact A4 page)`);
     } catch(err) {
       console.error("Smart PDF error:", err);
-      // Fallback: Opens clean printable window
+      // TIER 3: Fallback printable window
       printInvoiceFromList(invoiceNo);
     } finally {
-      if (btn) btn.innerText = "📥 Download PDF File Directly";
+      if (btn) btn.innerText = "📄 Download & Share A4 PDF";
     }
   }
 
@@ -1427,7 +1448,7 @@
             <div class="invoice-actions">
               <button onclick="viewInvoice('${inv.invoiceNo}')">👁️ View</button>
               <button onclick="editInvoice('${inv.invoiceNo}')">✏️ Edit</button>
-              <button onclick="downloadPdfSmart('${inv.invoiceNo}')" style="background:#0284c7; color:white;">📥 Download PDF</button>
+              <button onclick="downloadPdfSmart('${inv.invoiceNo}')" style="background:#0284c7; color:white;">📄 Download & Share PDF</button>
               <button onclick="printInvoiceFromList('${inv.invoiceNo}')">🖨️ Print</button>
               ${isLatest ? `<button onclick="deleteInvoice('${inv.invoiceNo}')" style="background:#b91c1c; color:white;" title="Delete recent bill">🗑️ Delete Recent</button>` : ''}
             </div>
@@ -1452,7 +1473,7 @@
     btnDiv.style.flexWrap = 'wrap';
     btnDiv.style.gap = '12px';
     btnDiv.innerHTML = `
-      <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invoiceNo}')">📥 Download PDF File Directly</button>
+      <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invoiceNo}')">📄 Download & Share A4 PDF</button>
       <button class="btn-primary btn-print" onclick="window.printInvoice()">🖨️ Print Invoice</button>
       <button class="btn-primary btn-eway" onclick="exportEwayBillJson('${invoiceNo}')">🚛 Export E-Way Bill JSON</button>
     `;
