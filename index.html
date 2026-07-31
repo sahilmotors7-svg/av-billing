@@ -1437,7 +1437,6 @@
             <div><strong>${inv.invoiceNo}</strong> | ${escapeHtml(inv.customerName)} | ₹ ${parseFloat(inv.grandTotal).toFixed(2)} ${isLatest ? '<span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:12px; font-size:0.68rem; font-weight:bold; margin-left:6px;">LATEST</span>' : ''}</div>
             <div class="invoice-actions">
               <button onclick="viewInvoice('${inv.invoiceNo}')">👁️ View</button>
-              <button onclick="editInvoice('${inv.invoiceNo}')">✏️ Edit</button>
               <button onclick="downloadPdfSmart('${inv.invoiceNo}')" style="background:#0284c7; color:white;">📄 Download & Share PDF</button>
               <button onclick="printInvoiceFromList('${inv.invoiceNo}')">🖨️ Print</button>
               ${isLatest ? `<button onclick="deleteInvoice('${inv.invoiceNo}')" style="background:#b91c1c; color:white;" title="Delete recent bill">🗑️ Delete Recent</button>` : ''}
