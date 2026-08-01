@@ -1109,6 +1109,7 @@
       previewDiv.appendChild(btnDiv);
     }
     btnDiv.innerHTML = `
+      <button class="btn-primary" style="background:#7c3aed; color:white;" onclick="generateEWayBillDirect('${invData.invoiceNo}')">⚡ Generate 1-Click E-Way Bill</button>
       <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invData.invoiceNo}')">📄 Download & Share A4 PDF</button>
       <button class="btn-primary btn-print" onclick="window.printInvoice()">🖨️ Print Invoice</button>
       <button class="btn-primary btn-eway" onclick="exportEwayBillJson('${invData.invoiceNo}')">🚛 Export E-Way Bill JSON</button>
@@ -1311,6 +1312,41 @@
     dlAnchorElem.remove();
   }
 
+  // 1-CLICK DIRECT E-WAY BILL GENERATION VIA SANDBOX.CO.IN GSP API
+  async function generateEWayBillDirect(invoiceNo) {
+    let inv = null;
+    if (invoiceNo) {
+      inv = allInvoices.find(i => i.invoiceNo && i.invoiceNo.trim().toUpperCase() === invoiceNo.trim().toUpperCase());
+    }
+    if (!inv) inv = collectInvoiceData();
+    if (!inv) { alert("❌ Invoice data not found"); return; }
+
+    const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : null;
+    if (btn) btn.innerText = "⏳ Contacting Govt NIC Server via Sandbox GSP...";
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "generateEWayBill", invoiceNo: inv.invoiceNo, invoiceData: inv })
+      });
+      const text = await res.text();
+      let resJson = {};
+      try { resJson = JSON.parse(text); } catch(ex) { resJson = { message: text }; }
+
+      if (resJson.status === "SUCCESS" || resJson.ewayBillNo) {
+        alert(`✅ Official Govt E-Way Bill Generated Successfully!\n\nE-Way Bill No: ${resJson.ewayBillNo}\nValid Until: ${resJson.validUpto || 'N/A'}`);
+        await loadInvoiceList();
+      } else {
+        alert(`ℹ️ NIC / Sandbox GSP Response:\n${resJson.message || text || 'Request processed'}\n\nTip: You can also click "Export E-Way Bill JSON" for 100% free instant bulk upload on ewaybillgst.gov.in!`);
+      }
+    } catch(err) {
+      console.error("E-Way Bill Direct Error:", err);
+      alert("⚠️ Request initiated. You can also click Export E-Way Bill JSON for instant bulk upload.");
+    } finally {
+      if (btn) btn.innerText = "⚡ Generate 1-Click E-Way Bill";
+    }
+  }
+
   // Delete Recent Invoice with Bulletproof Dual Trigger & Security Lock
   async function deleteInvoice(invoiceNo) {
     if (!allInvoices || allInvoices.length === 0) return;
@@ -1462,6 +1498,7 @@
     btnDiv.style.flexWrap = 'wrap';
     btnDiv.style.gap = '12px';
     btnDiv.innerHTML = `
+      <button class="btn-primary" style="background:#7c3aed; color:white;" onclick="generateEWayBillDirect('${invoiceNo}')">⚡ Generate 1-Click E-Way Bill</button>
       <button class="btn-primary btn-dlpdf" onclick="downloadPdfSmart('${invoiceNo}')">📄 Download & Share A4 PDF</button>
       <button class="btn-primary btn-print" onclick="window.printInvoice()">🖨️ Print Invoice</button>
       <button class="btn-primary btn-eway" onclick="exportEwayBillJson('${invoiceNo}')">🚛 Export E-Way Bill JSON</button>
@@ -1585,6 +1622,7 @@
   window.printInvoice = printInvoice;
   window.downloadPdfSmart = downloadPdfSmart;
   window.exportEwayBillJson = exportEwayBillJson;
+  window.generateEWayBillDirect = generateEWayBillDirect;
   window.deleteInvoice = deleteInvoice;
   window.viewInvoice = viewInvoice;
   window.editInvoice = editInvoice;

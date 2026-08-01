@@ -1,5 +1,5 @@
 // =================================================================
-// AV TECHNOLOGY - Complete Google Apps Script (Google Drive PDF Link)
+// AV TECHNOLOGY - Complete Google Apps Script (Google Drive PDF & Sandbox E-Way Bill)
 // Paste this entire file into Extensions > Apps Script in Google Sheets
 // =================================================================
 
@@ -64,173 +64,100 @@ function numberToWordsGS(num) {
   return result + " Only";
 }
 
-// Helper: Build Printable HTML for PDF Generation
-function buildPdfHtmlString(inv) {
-  let itemsRows = '';
-  if (Array.isArray(inv.items)) {
-    inv.items.forEach((it, idx) => {
-      itemsRows += `<tr>
-        <td style="border:1px solid #cfdfed; padding:6px; text-align:center;">${idx + 1}</td>
-        <td style="border:1px solid #cfdfed; padding:6px; text-align:left;">${it.desc || ''}</td>
-        <td style="border:1px solid #cfdfed; padding:6px; text-align:center;">${it.hsn || ''}</td>
-        <td style="border:1px solid #cfdfed; padding:6px; text-align:center;">${it.qty || 1}</td>
-        <td style="border:1px solid #cfdfed; padding:6px; text-align:right;">₹ ${parseFloat(it.rate || 0).toFixed(2)}</td>
-        <td style="border:1px solid #cfdfed; padding:6px; text-align:right;">₹ ${parseFloat(it.amount || 0).toFixed(2)}</td>
-      </tr>`;
-    });
+// Helper: Authenticate with Sandbox.co.in GSP API
+function getSandboxAuthToken() {
+  const props = PropertiesService.getScriptProperties();
+  const apiKey = props.getProperty('GSP_API_KEY') || "";
+  const apiSecret = props.getProperty('GSP_API_SECRET') || "";
+  if (!apiKey || !apiSecret) {
+    throw new Error("GSP_API_KEY or GSP_API_SECRET missing in Script Properties");
   }
-
-  let gstRows = '';
-  if (inv.isDelhi) {
-    gstRows = `<tr><td style="padding:4px; text-align:left;">CGST @9%</td><td style="text-align:right;">₹ ${(inv.cgst||0).toFixed(2)}</td></tr>
-               <tr><td style="padding:4px; text-align:left;">SGST @9%</td><td style="text-align:right;">₹ ${(inv.sgst||0).toFixed(2)}</td></tr>`;
-  } else {
-    gstRows = `<tr><td style="padding:4px; text-align:left;">IGST @18%</td><td style="text-align:right;">₹ ${(inv.igst||0).toFixed(2)}</td></tr>`;
-  }
-
-  const words = numberToWordsGS(inv.grandTotal || 0);
-
-  return `<!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="utf-8">
-    <style>
-      body { font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; padding: 20px; font-size: 12px; }
-      .title { text-align: center; font-size: 20px; font-weight: bold; color: #1f3b4c; border-bottom: 2px solid #cfdfed; padding-bottom: 4px; display: inline-block; margin-bottom: 10px; }
-      .brand-header { text-align: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px; }
-      .brand-name { font-size: 24px; font-weight: bold; color: #003153; }
-      .brand-tag { font-size: 9px; color: #2c5a7a; }
-      .company-details { font-size: 9px; color: #334155; margin-top: 4px; }
-      .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; background: #fafcff; border: 1px solid #e2e8f0; border-radius: 8px; }
-      .info-table td { padding: 8px 12px; vertical-align: top; font-size: 11px; }
-      .items-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
-      .items-table th { background: #1e4a76; color: white; padding: 8px; border: 1px solid #1e4a76; }
-      .total-box { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-      .words { background: #eef2ff; padding: 8px 12px; border-radius: 6px; margin: 10px 0; font-weight: bold; }
-      .terms { font-size: 9px; background: #fef7e0; padding: 8px; border-left: 3px solid #f59e0b; margin-top: 15px; }
-      .sign-box { text-align: right; margin-top: 40px; font-weight: bold; font-size: 11px; }
-    </style>
-  </head>
-  <body>
-    <div style="text-align:center;"><div class="title">TAX INVOICE</div></div>
-    <div class="brand-header">
-      <div class="brand-name">AV TECHNOLOGY</div>
-      <div class="brand-tag">PROJECTORS | VIDEO CAMERA | LED VIDEO WALLS | SPARE PARTS</div>
-      <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>☎ +91 9711166056 ✉ avtechnologyy@gmail.com</div>
-    </div>
-    <table class="info-table">
-      <tr>
-        <td style="width:55%;">
-          <strong>M/S (Customer):</strong> ${inv.customerName || ''}<br>
-          <strong>GSTIN NO:</strong> ${inv.custGstin || '—'}<br>
-          <strong>State:</strong> ${inv.stateName || 'Delhi'} (Code: ${inv.stateCode || '07'})<br>
-          <strong>Place of Supply:</strong> ${inv.placeSupply || '—'}<br>
-          <strong>Vehicle No:</strong> ${inv.vehicleNo || '—'}
-        </td>
-        <td style="width:45%; border-left: 1px solid #e2e8f0;">
-          <strong>GSTIN:</strong> 07ABIFA3151F1ZS<br>
-          <strong>STATE CODE:</strong> 07<br>
-          <strong>INVOICE NO:</strong> ${inv.invoiceNo || ''}<br>
-          <strong>DATE:</strong> ${inv.invoiceDate || ''}<br>
-          <strong>Transport Mode:</strong> ${inv.transportMode || '—'}
-        </td>
-      </tr>
-    </table>
-    <table class="items-table">
-      <thead>
-        <tr><th>S.No</th><th>PARTICULAR</th><th>HSN</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr>
-      </thead>
-      <tbody>
-        ${itemsRows}
-      </tbody>
-    </table>
-    <div style="text-align:right; font-weight:bold; margin-bottom:6px;">TAXABLE VALUE: ₹ ${(inv.taxable||0).toFixed(2)}</div>
-    <div class="words">AMOUNT IN WORDS: ${words}</div>
-    <table class="total-box">
-      ${gstRows}
-      <tr><td style="padding:4px; text-align:left;">CARTAGE:</td><td style="text-align:right;">₹ ${(inv.cartage||0).toFixed(2)}</td></tr>
-      <tr style="background:#fef9e3; font-size:13px; font-weight:bold;"><td style="padding:6px; text-align:left;">GRAND TOTAL:</td><td style="text-align:right;">₹ ${(inv.grandTotal||0).toFixed(2)}</td></tr>
-    </table>
-    <div class="terms">
-      <strong>TERMS & CONDITIONS:</strong><br>
-      1. IF THE BILL IS NOT PAID ON DUE DATE INTEREST 18% P.A WILL BE CHARGED.<br>
-      2. ALL DISPUTES SUBJECT TO DELHI JURISDICTION ONLY.<br>
-      3. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.
-    </div>
-    <div class="sign-box">
-      FOR AV TECHNOLOGY<br><br><br>
-      AUTHORISED SIGNATORY
-    </div>
-  </body>
-  </html>`;
-}
-
-// Generate Google Drive PDF Link (No Gmail login required for client!)
-function getGoogleDrivePdfUrl(invoiceNo) {
-  if (!invoiceNo) return null;
-  const sheet = getTargetSheet();
-  const data = sheet.getDataRange().getValues();
-  if (data.length < 2) return null;
   
-  const targetClean = invoiceNo.toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-  let row = null;
-  for (let i = data.length - 1; i >= 1; i--) {
-    if (data[i][0]) {
-      const cellClean = data[i][0].toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-      if (cellClean === targetClean) {
-        row = data[i];
-        break;
-      }
-    }
-  }
-  if (!row) return null;
-
-  let itemsList = [];
-  try { itemsList = JSON.parse(row[19] || "[]"); } catch(ex) { itemsList = []; }
-
-  const inv = {
-    invoiceNo: row[0],
-    invoiceDate: row[1],
-    customerName: row[2],
-    custGstin: row[3],
-    stateCode: row[4],
-    stateName: row[5],
-    vehicleNo: row[6],
-    deliveryDate: row[7],
-    placeSupply: row[8],
-    transportMode: row[9],
-    chequeNo: row[10],
-    bankBranch: row[11],
-    cartage: parseFloat(row[12]) || 0,
-    taxable: parseFloat(row[13]) || 0,
-    cgst: parseFloat(row[14]) || 0,
-    sgst: parseFloat(row[15]) || 0,
-    igst: parseFloat(row[16]) || 0,
-    grandTotal: parseFloat(row[17]) || 0,
-    isDelhi: row[18] === true || row[18] === "true",
-    items: itemsList
+  const options = {
+    method: 'post',
+    headers: {
+      'x-api-key': apiKey,
+      'x-api-secret': apiSecret,
+      'x-api-version': '1.0',
+      'Content-Type': 'application/json'
+    },
+    muteHttpExceptions: true
   };
-
-  const htmlContent = buildPdfHtmlString(inv);
-  const blob = Utilities.newBlob(htmlContent, 'text/html', 'invoice.html').getAs('application/pdf');
-  const cleanNo = inv.invoiceNo.toString().replace(/[^a-zA-Z0-9]/g, '_');
-  blob.setName('Invoice_' + cleanNo + '.pdf');
-
-  let folder;
-  const folders = DriveApp.getFoldersByName("AV_Technology_Invoices");
-  if (folders.hasNext()) {
-    folder = folders.next();
-  } else {
-    folder = DriveApp.createFolder("AV_Technology_Invoices");
-  }
-
-  const file = folder.createFile(blob);
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   
-  return file.getUrl();
+  const res = UrlFetchApp.fetch('https://api.sandbox.co.in/authenticate', options);
+  const json = JSON.parse(res.getContentText());
+  if (json.access_token) {
+    return json.access_token;
+  }
+  throw new Error(json.message || "Failed to authenticate with Sandbox GSP");
 }
 
-// ========== DO POST - Save, Update, or Delete Invoice ==========
+// Generate Official E-Way Bill via Sandbox GSP
+function generateEWayBillDirectGSP(invoiceNo, invData) {
+  try {
+    const token = getSandboxAuthToken();
+    const props = PropertiesService.getScriptProperties();
+    const apiKey = props.getProperty('GSP_API_KEY') || "";
+
+    const itemList = (invData.items || []).map(it => ({
+      productName: it.desc,
+      hsnCode: parseInt(it.hsn) || 8528,
+      quantity: parseFloat(it.qty) || 1,
+      qtyUnit: "NOS",
+      taxableAmount: parseFloat(it.amount),
+      cgstRate: invData.isDelhi ? 9 : 0,
+      sgstRate: invData.isDelhi ? 9 : 0,
+      igstRate: invData.isDelhi ? 0 : 18
+    }));
+
+    const ewbPayload = {
+      userGstin: "07ABIFA3151F1ZS",
+      supplyType: "O",
+      subSupplyType: "1",
+      docType: "INV",
+      docNo: invData.invoiceNo,
+      docDate: invData.invoiceDate,
+      fromGstin: "07ABIFA3151F1ZS",
+      fromStateCode: 7,
+      toGstin: invData.custGstin || "URP",
+      toStateCode: parseInt(invData.stateCode) || 7,
+      totalValue: invData.taxable,
+      cgstValue: invData.cgst,
+      sgstValue: invData.sgst,
+      igstValue: invData.igst,
+      totInvValue: invData.grandTotal,
+      transMode: "1",
+      transDistance: "15",
+      vehicleNo: invData.vehicleNo || "",
+      vehicleType: "R",
+      itemList: itemList
+    };
+
+    const options = {
+      method: 'post',
+      headers: {
+        'Authorization': token,
+        'x-api-key': apiKey,
+        'x-api-version': '1.0',
+        'Content-Type': 'application/json'
+      },
+      payload: JSON.stringify(ewbPayload),
+      muteHttpExceptions: true
+    };
+
+    const res = UrlFetchApp.fetch('https://api.sandbox.co.in/gst/ewaybill/generate', options);
+    const json = JSON.parse(res.getContentText());
+
+    if (json.ewayBillNo) {
+      return { status: "SUCCESS", ewayBillNo: json.ewayBillNo, validUpto: json.validUpto };
+    }
+    return { status: "INFO", message: json.message || res.getContentText() };
+  } catch(e) {
+    return { status: "ERROR", message: e.toString() };
+  }
+}
+
+// ========== DO POST - Save, Update, Delete Invoice or Generate E-Way Bill ==========
 function doPost(e) {
   try {
     let data = {};
@@ -240,8 +167,14 @@ function doPost(e) {
     
     const urlAction = (e && e.parameter && e.parameter.action) ? e.parameter.action : "";
     const bodyAction = data.action || "";
-    const isDelete = (urlAction === "delete" || bodyAction === "delete" || data.isDelete === true);
     
+    // E-Way Bill Direct Generation Action
+    if (bodyAction === "generateEWayBill" || urlAction === "generateEWayBill") {
+      const ewbRes = generateEWayBillDirectGSP(data.invoiceNo, data.invoiceData || data);
+      return ContentService.createTextOutput(JSON.stringify(ewbRes)).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const isDelete = (urlAction === "delete" || bodyAction === "delete" || data.isDelete === true);
     const targetInvoiceNo = data.invoiceNo || (e && e.parameter && e.parameter.invoiceNo) || "";
     const sheet = getTargetSheet();
     
@@ -317,21 +250,8 @@ function doGet(e) {
     return ContentService.createTextOutput("DELETED: " + deleted);
   }
 
-  // Action: GET PDF LINK (Public Google Drive Link)
-  if (e && e.parameter && e.parameter.action === "getPdfLink" && e.parameter.invoiceNo) {
-    try {
-      const pdfUrl = getGoogleDrivePdfUrl(e.parameter.invoiceNo);
-      return ContentService.createTextOutput(JSON.stringify({ pdfUrl: pdfUrl })).setMimeType(ContentService.MimeType.JSON);
-    } catch(err) {
-      return ContentService.createTextOutput(JSON.stringify({ error: err.toString() })).setMimeType(ContentService.MimeType.JSON);
-    }
-  }
-
   const data = sheet.getDataRange().getValues();
   if (data.length < 2) {
-    if (e && e.parameter && e.parameter.action === "getLast") {
-      return ContentService.createTextOutput(JSON.stringify({ lastNo: "INV-26/000" })).setMimeType(ContentService.MimeType.JSON);
-    }
     return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
   }
   
@@ -371,29 +291,6 @@ function doGet(e) {
     }
     return ContentService.createTextOutput(JSON.stringify(invoices)).setMimeType(ContentService.MimeType.JSON);
   }
-  
-  // Action: Get last invoice number
-  if (e && e.parameter && e.parameter.action === "getLast") {
-    if (rows.length === 0) {
-      return ContentService.createTextOutput(JSON.stringify({ lastNo: "INV-26/000" })).setMimeType(ContentService.MimeType.JSON);
-    }
-    const lastInvoice = rows[rows.length-1][0];
-    return ContentService.createTextOutput(JSON.stringify({ lastNo: lastInvoice })).setMimeType(ContentService.MimeType.JSON);
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify({ error: "Invalid request" })).setMimeType(ContentService.MimeType.JSON);
-}
 
-// ONE-CLICK AUTHORIZATION TEST FOR GOOGLE DRIVE (Run once in Apps Script Editor!)
-function testDrivePdf() {
-  const sheet = getTargetSheet();
-  const data = sheet.getDataRange().getValues();
-  if (data.length > 1) {
-    const lastInvoiceNo = data[data.length - 1][0];
-    Logger.log("Generating Drive PDF Link for: " + lastInvoiceNo);
-    const link = getGoogleDrivePdfUrl(lastInvoiceNo);
-    Logger.log("Result PDF URL: " + link);
-  } else {
-    Logger.log("Please create at least 1 invoice in sheet first.");
-  }
+  return ContentService.createTextOutput(JSON.stringify(rows)).setMimeType(ContentService.MimeType.JSON);
 }
