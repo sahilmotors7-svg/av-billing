@@ -92,7 +92,7 @@ function getSandboxAuthToken() {
   throw new Error(json.message || "Failed to authenticate with Sandbox GSP");
 }
 
-// Generate Official E-Way Bill via Sandbox GSP
+// Generate Official E-Way Bill via Sandbox GSP (Multi-Endpoint Auto-Routing)
 function generateEWayBillDirectGSP(invoiceNo, invData) {
   try {
     const token = getSandboxAuthToken();
@@ -145,13 +145,31 @@ function generateEWayBillDirectGSP(invoiceNo, invData) {
       muteHttpExceptions: true
     };
 
-    const res = UrlFetchApp.fetch('https://api.sandbox.co.in/gst/ewaybill/generate', options);
-    const json = JSON.parse(res.getContentText());
+    const endpoints = [
+      'https://api.sandbox.co.in/gsp/v1.0/ewaybill/generate',
+      'https://api.sandbox.co.in/gsp/ewaybill/v1.03/generate',
+      'https://api.sandbox.co.in/gst/ewaybill/v1.03/generate',
+      'https://api.sandbox.co.in/gst/ewaybill/generate'
+    ];
 
-    if (json.ewayBillNo) {
-      return { status: "SUCCESS", ewayBillNo: json.ewayBillNo, validUpto: json.validUpto };
+    let lastResText = "";
+    for (let i = 0; i < endpoints.length; i++) {
+      const res = UrlFetchApp.fetch(endpoints[i], options);
+      const code = res.getResponseCode();
+      lastResText = res.getContentText();
+      if (code !== 404) {
+        let json = {};
+        try { json = JSON.parse(lastResText); } catch(ex) {}
+        if (json.ewayBillNo || (json.data && json.data.ewayBillNo) || (json.result && json.result.ewayBillNo)) {
+          const ewbNo = json.ewayBillNo || (json.data && json.data.ewayBillNo) || (json.result && json.result.ewayBillNo);
+          const vUpto = json.validUpto || (json.data && json.data.validUpto);
+          return { status: "SUCCESS", ewayBillNo: ewbNo, validUpto: vUpto };
+        }
+        return { status: "INFO", message: json.message || json.error || lastResText };
+      }
     }
-    return { status: "INFO", message: json.message || res.getContentText() };
+
+    return { status: "INFO", message: lastResText || "Sandbox Endpoint Not Found" };
   } catch(e) {
     return { status: "ERROR", message: e.toString() };
   }
