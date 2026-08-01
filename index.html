@@ -623,6 +623,14 @@
         <input type="text" id="invoiceNoManual" placeholder="INV-26/001">
       </div>
       <div class="field">
+        <label>GST Copy Type</label>
+        <select id="copyTypeSelect">
+          <option value="ORIGINAL FOR RECIPIENT" selected>Original for Recipient</option>
+          <option value="DUPLICATE FOR TRANSPORTER">Duplicate for Transporter</option>
+          <option value="TRIPLICATE FOR SUPPLIER">Triplicate for Supplier</option>
+        </select>
+      </div>
+      <div class="field">
         <label>Customer Name (M/S) *</label>
         <input type="text" id="customerName" placeholder="M/s SHARMA ENTERPRISES" list="customerDatalist">
       </div>
@@ -996,6 +1004,9 @@
       invoiceNo = `INV-${year}/001`;
     }
     const today = new Date().toLocaleDateString('en-IN');
+    const copyTypeSelect = document.getElementById('copyTypeSelect');
+    const copyType = copyTypeSelect ? copyTypeSelect.value : "ORIGINAL FOR RECIPIENT";
+
     return {
       invoiceNo, invoiceDate: today, customerName: customerName.toUpperCase(),
       custGstin: document.getElementById('custGstin').value,
@@ -1003,7 +1014,7 @@
       vehicleNo: document.getElementById('vehicleNo').value, deliveryDate: document.getElementById('deliveryDate').value,
       placeSupply: document.getElementById('placeSupply').value, transportMode: document.getElementById('transportMode').value,
       chequeNo: document.getElementById('chequeNo').value, bankBranch: document.getElementById('bankBranch').value,
-      cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items,
+      cartage, taxable, cgst, sgst, igst, grandTotal, isDelhi, items, copyType,
       action: editingInvoiceNo ? "update" : "create",
       isUpdate: !!editingInvoiceNo
     };
@@ -1047,10 +1058,21 @@
       </div>
     `;
     const phoneBlack = "☎";
+    const currentCopyType = inv.copyType || 'ORIGINAL FOR RECIPIENT';
     return `
-      <div style="font-family:'Segoe UI',Roboto,sans-serif;" id="invoiceContent">
-        <div style="text-align:center;"><div class="tax-invoice-title">TAX INVOICE</div></div>
-        <div class="brand-header">
+      <div style="font-family:'Segoe UI',Roboto,sans-serif; position:relative; overflow:hidden;" id="invoiceContent">
+        <!-- CRISP DIAGONAL WATERMARK -->
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%) rotate(-35deg); font-size:2.8rem; font-weight:900; color:#0f3b5c; opacity:0.045; pointer-events:none; white-space:nowrap; letter-spacing:10px; user-select:none; z-index:0;">
+          AV TECHNOLOGY • TAX INVOICE
+        </div>
+        
+        <!-- OFFICIAL GST COPY BADGE -->
+        <div style="position:absolute; top:12px; right:16px; border:1.5px solid #0f3b5c; color:#0f3b5c; background:#fafcff; font-size:0.6rem; font-weight:800; letter-spacing:0.5px; padding:3px 10px; border-radius:20px; text-transform:uppercase; z-index:2;">
+          ${escapeHtml(currentCopyType)}
+        </div>
+
+        <div style="text-align:center; position:relative; z-index:1;"><div class="tax-invoice-title">TAX INVOICE</div></div>
+        <div class="brand-header" style="position:relative; z-index:1;">
           <div class="brand-name">AV TECHNOLOGY</div>
           <div class="brand-tag">PROJECTORS | VIDEO CAMERA | LED VIDEO WALLS | SPARE PARTS</div>
           <div class="company-details">20 PART 2 SAINIK VIHAR MOHAN GARDEN UTTAM NAGAR NEW DELHI -59<br>${phoneBlack} +91 9711166056  ✉ avtechnologyy@gmail.com</div>
