@@ -146,10 +146,13 @@ function generateEWayBillDirectGSP(invoiceNo, invData) {
     };
 
     const endpoints = [
+      'https://api.sandbox.co.in/gsp/v1.0/ewaybill',
+      'https://api.sandbox.co.in/gst/v1.0/ewaybill',
+      'https://api.sandbox.co.in/ewaybill/v1.0/generate',
       'https://api.sandbox.co.in/gsp/v1.0/ewaybill/generate',
       'https://api.sandbox.co.in/gsp/ewaybill/v1.03/generate',
       'https://api.sandbox.co.in/gst/ewaybill/v1.03/generate',
-      'https://api.sandbox.co.in/gst/ewaybill/generate'
+      'https://api.sandbox.co.in/ewaybill/generate'
     ];
 
     let lastResText = "";
