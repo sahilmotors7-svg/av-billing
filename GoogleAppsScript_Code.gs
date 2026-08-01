@@ -92,7 +92,7 @@ function getSandboxAuthToken() {
   throw new Error(json.message || "Failed to authenticate with Sandbox GSP");
 }
 
-// Generate Official E-Way Bill via Sandbox GSP (Multi-Endpoint Auto-Routing)
+// Generate Official E-Way Bill via Sandbox GSP (Multi-Endpoint Auto-Routing & Exact Diagnostics)
 function generateEWayBillDirectGSP(invoiceNo, invData) {
   try {
     const token = getSandboxAuthToken();
@@ -139,6 +139,8 @@ function generateEWayBillDirectGSP(invoiceNo, invData) {
         'Authorization': token,
         'x-api-key': apiKey,
         'x-api-version': '1.0',
+        'x-user-gstin': '07ABIFA3151F1ZS',
+        'gstin': '07ABIFA3151F1ZS',
         'Content-Type': 'application/json'
       },
       payload: JSON.stringify(ewbPayload),
@@ -147,32 +149,34 @@ function generateEWayBillDirectGSP(invoiceNo, invData) {
 
     const endpoints = [
       'https://api.sandbox.co.in/gsp/v1.0/ewaybill',
+      'https://api.sandbox.co.in/gsp/v1.0/ewaybill/generate',
       'https://api.sandbox.co.in/gst/v1.0/ewaybill',
       'https://api.sandbox.co.in/ewaybill/v1.0/generate',
-      'https://api.sandbox.co.in/gsp/v1.0/ewaybill/generate',
       'https://api.sandbox.co.in/gsp/ewaybill/v1.03/generate',
-      'https://api.sandbox.co.in/gst/ewaybill/v1.03/generate',
-      'https://api.sandbox.co.in/ewaybill/generate'
+      'https://api.sandbox.co.in/gst/ewaybill/v1.03/generate'
     ];
 
-    let lastResText = "";
+    let diagnosticLogs = [];
+
     for (let i = 0; i < endpoints.length; i++) {
       const res = UrlFetchApp.fetch(endpoints[i], options);
       const code = res.getResponseCode();
-      lastResText = res.getContentText();
+      const rawText = res.getContentText();
+      diagnosticLogs.push(`[${code}] ${endpoints[i]} -> ${rawText}`);
+
       if (code !== 404) {
         let json = {};
-        try { json = JSON.parse(lastResText); } catch(ex) {}
+        try { json = JSON.parse(rawText); } catch(ex) {}
         if (json.ewayBillNo || (json.data && json.data.ewayBillNo) || (json.result && json.result.ewayBillNo)) {
           const ewbNo = json.ewayBillNo || (json.data && json.data.ewayBillNo) || (json.result && json.result.ewayBillNo);
           const vUpto = json.validUpto || (json.data && json.data.validUpto);
           return { status: "SUCCESS", ewayBillNo: ewbNo, validUpto: vUpto };
         }
-        return { status: "INFO", message: json.message || json.error || lastResText };
+        return { status: "INFO", message: json.message || json.error || rawText };
       }
     }
 
-    return { status: "INFO", message: lastResText || "Sandbox Endpoint Not Found" };
+    return { status: "INFO", message: "Sandbox Response:\n" + diagnosticLogs.join("\n") };
   } catch(e) {
     return { status: "ERROR", message: e.toString() };
   }
