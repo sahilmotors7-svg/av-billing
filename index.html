@@ -860,7 +860,7 @@
     return result + " Only";
   }
 
-  function escapeHtml(str) { return (str || "").replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+  function escapeHtml(str) { return String(str == null ? "" : str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
   // Render items table
   function renderItemsTable() {
