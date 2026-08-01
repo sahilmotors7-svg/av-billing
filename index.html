@@ -1168,7 +1168,12 @@
     if (!inv) inv = collectInvoiceData();
     if (!inv) { alert("❌ Invoice data not found. Please enter Customer Name & Items."); return; }
 
-    const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : null;
+    let btn = null;
+    try {
+      if (typeof event !== 'undefined' && event && event.target && typeof event.target.innerText === 'string') {
+        btn = event.target;
+      }
+    } catch(e) {}
     if (btn) btn.innerText = "⏳ Generating A4 PDF...";
 
     try {
@@ -1256,7 +1261,9 @@
       // TIER 3: Fallback printable window
       printInvoiceFromList(invoiceNo);
     } finally {
-      if (btn) btn.innerText = "📄 Download & Share A4 PDF";
+      if (btn) {
+        try { btn.innerText = "📄 Download & Share A4 PDF"; } catch(e) {}
+      }
     }
   }
 
