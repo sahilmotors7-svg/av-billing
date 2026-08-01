@@ -1159,11 +1159,16 @@
     window.print();
   }
 
+  function normalizeInvNo(no) {
+    return (no || "").toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  }
+
   // BULLETPROOF RELIABLE A4 PDF GENERATION & SHARE ENGINE FOR ALL DEVICES & RETRIEVE TAB
   async function downloadPdfSmart(invoiceNo) {
     let inv = null;
     if (invoiceNo) {
-      inv = allInvoices.find(i => i.invoiceNo && i.invoiceNo.trim().toUpperCase() === invoiceNo.trim().toUpperCase());
+      const cleanTarget = normalizeInvNo(invoiceNo);
+      inv = allInvoices.find(i => i.invoiceNo && normalizeInvNo(i.invoiceNo) === cleanTarget);
     }
     if (!inv) inv = collectInvoiceData();
     if (!inv) { alert("❌ Invoice data not found"); return; }
