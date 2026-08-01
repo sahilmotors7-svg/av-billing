@@ -92,6 +92,21 @@ function getSandboxAuthToken() {
   throw new Error(json.message || "Failed to authenticate with Sandbox GSP");
 }
 
+// Format Date to DD/MM/YYYY for NIC E-Way Bill Schema
+function formatDateEwb(dateStr) {
+  if (!dateStr) {
+    const d = new Date();
+    return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear();
+  }
+  if (dateStr.includes('/')) return dateStr;
+  if (dateStr.includes('-')) {
+    const parts = dateStr.split('-');
+    if (parts[0].length === 4) return parts[2] + "/" + parts[1] + "/" + parts[0];
+    return dateStr;
+  }
+  return dateStr;
+}
+
 // Generate Official E-Way Bill via Sandbox GSP (Multi-Endpoint Auto-Routing & Exact Diagnostics)
 function generateEWayBillDirectGSP(invoiceNo, invData) {
   try {
@@ -110,13 +125,15 @@ function generateEWayBillDirectGSP(invoiceNo, invData) {
       igstRate: invData.isDelhi ? 0 : 18
     }));
 
+    const formattedDate = formatDateEwb(invData.invoiceDate);
+
     const ewbPayload = {
       userGstin: "07ABIFA3151F1ZS",
       supplyType: "O",
       subSupplyType: "1",
       docType: "INV",
       docNo: invData.invoiceNo,
-      docDate: invData.invoiceDate,
+      docDate: formattedDate,
       fromGstin: "07ABIFA3151F1ZS",
       fromStateCode: 7,
       toGstin: invData.custGstin || "URP",
@@ -148,12 +165,12 @@ function generateEWayBillDirectGSP(invoiceNo, invData) {
     };
 
     const endpoints = [
-      'https://api.sandbox.co.in/gsp/ewaybill',
-      'https://api.sandbox.co.in/gst/ewaybill',
       'https://api.sandbox.co.in/gsp/v1.0/ewaybill',
       'https://api.sandbox.co.in/gsp/v1.0/ewaybill/generate',
       'https://api.sandbox.co.in/gst/v1.0/ewaybill',
       'https://api.sandbox.co.in/ewaybill/v1.0/generate',
+      'https://api.sandbox.co.in/gsp/ewaybill',
+      'https://api.sandbox.co.in/gst/ewaybill',
       'https://api.sandbox.co.in/gsp/ewaybill/v1.03/generate',
       'https://api.sandbox.co.in/gst/ewaybill/v1.03/generate'
     ];
