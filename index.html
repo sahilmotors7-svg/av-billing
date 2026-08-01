@@ -1159,75 +1159,57 @@
     window.print();
   }
 
-  function normalizeInvNo(no) {
-    return (no || "").toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-  }
-
-  // BULLETPROOF RELIABLE A4 PDF GENERATION & SHARE ENGINE FOR ALL DEVICES & RETRIEVE TAB
+  // 3-TIER ZERO-FAIL A4 PDF GENERATION & MOBILE SHARE ENGINE
   async function downloadPdfSmart(invoiceNo) {
     let inv = null;
     if (invoiceNo) {
-      const cleanTarget = normalizeInvNo(invoiceNo);
-      inv = allInvoices.find(i => i.invoiceNo && normalizeInvNo(i.invoiceNo) === cleanTarget);
+      inv = allInvoices.find(i => i.invoiceNo && i.invoiceNo.trim().toUpperCase() === invoiceNo.trim().toUpperCase());
     }
     if (!inv) inv = collectInvoiceData();
-    if (!inv) { alert("❌ Invoice data not found"); return; }
+    if (!inv) { alert("❌ Invoice data not found. Please enter Customer Name & Items."); return; }
 
-    let btn = null;
-    try {
-      if (typeof event !== 'undefined' && event && event.target && typeof event.target.innerText === 'string') {
-        btn = event.target;
-      }
-    } catch(e) {}
+    const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : null;
     if (btn) btn.innerText = "⏳ Generating A4 PDF...";
 
     try {
-      // Check if #pastInvoiceContainer or #invoicePreview already has #invoiceContent rendered
-      let targetContent = null;
-      let tempFrame = null;
+      // 1. Create a dedicated container styled with EXACT A4 dimensions in DOM flow
+      const a4Frame = document.createElement('div');
+      a4Frame.style.position = 'absolute';
+      a4Frame.style.top = '0';
+      a4Frame.style.left = '0';
+      a4Frame.style.width = '794px'; // 210mm in px at 96 DPI
+      a4Frame.style.minHeight = '1123px'; // 297mm in px at 96 DPI
+      a4Frame.style.padding = '30px 35px';
+      a4Frame.style.boxSizing = 'border-box';
+      a4Frame.style.background = '#ffffff';
+      a4Frame.style.zIndex = '-1';
+      a4Frame.style.visibility = 'visible';
+      a4Frame.style.pointerEvents = 'none';
+      a4Frame.innerHTML = buildInvoiceHTML(inv);
+      document.body.appendChild(a4Frame);
 
-      const pastContent = document.querySelector('#pastInvoiceContainer #invoiceContent');
-      const createContent = document.querySelector('#invoicePreview #invoiceContent');
+      const targetContent = a4Frame.querySelector('#invoiceContent');
+      
+      // Wait 120ms for layout reflow and SVG render
+      await new Promise(r => setTimeout(r, 120));
 
-      if (pastContent && pastContent.offsetParent !== null) {
-        targetContent = pastContent;
-      } else if (createContent && createContent.offsetParent !== null) {
-        targetContent = createContent;
-      } else {
-        // Create dedicated A4 frame in DOM
-        tempFrame = document.createElement('div');
-        tempFrame.style.position = 'absolute';
-        tempFrame.style.top = '0';
-        tempFrame.style.left = '0';
-        tempFrame.style.width = '794px';
-        tempFrame.style.padding = '30px 35px';
-        tempFrame.style.boxSizing = 'border-box';
-        tempFrame.style.background = '#ffffff';
-        tempFrame.style.zIndex = '-1';
-        tempFrame.style.visibility = 'visible';
-        tempFrame.style.pointerEvents = 'none';
-        tempFrame.innerHTML = buildInvoiceHTML(inv);
-        document.body.appendChild(tempFrame);
-        targetContent = tempFrame.querySelector('#invoiceContent');
-        await new Promise(r => setTimeout(r, 100));
-      }
-
-      // Fast, ultra-reliable scale 2 canvas capture (0% memory crash on mobile)
+      // 2. High-resolution canvas capture with scale 2
       const canvas = await html2canvas(targetContent, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        width: 724 // Content width inside 35px padding
       });
 
-      if (tempFrame) tempFrame.remove();
+      a4Frame.remove();
 
       if (!canvas || canvas.width === 0 || canvas.height === 0) {
         throw new Error("Canvas rendering produced an empty image");
       }
 
-      // Construct A4 PDF
+      // 3. Create A4 jsPDF with 100% exact A4 aspect ratio (210mm x 297mm)
       const imgData = canvas.toDataURL('image/jpeg', 0.98);
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('portrait', 'mm', 'a4');
@@ -1235,6 +1217,7 @@
       const pdfWidth = 210; // A4 Width in mm
       const pdfHeight = 297; // A4 Height in mm
 
+      // Center the content on A4 page with clean 10mm top/side margins
       const renderWidth = 190;
       const renderHeight = (canvas.height * renderWidth) / canvas.width;
 
@@ -1271,9 +1254,7 @@
       // TIER 3: Fallback printable window
       printInvoiceFromList(invoiceNo);
     } finally {
-      if (btn) {
-        try { btn.innerText = "📄 Download & Share A4 PDF"; } catch(e) {}
-      }
+      if (btn) btn.innerText = "📄 Download & Share A4 PDF";
     }
   }
 
