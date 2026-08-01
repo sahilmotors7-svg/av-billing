@@ -1193,14 +1193,16 @@
       // Wait 120ms for layout reflow and SVG render
       await new Promise(r => setTimeout(r, 120));
 
-      // 2. High-resolution canvas capture with scale 2
+      // 2. Ultra High-Definition (300 DPI Retina) canvas capture
+      const scaleFactor = Math.max(window.devicePixelRatio || 1, 3);
       const canvas = await html2canvas(targetContent, {
-        scale: 2,
+        scale: scaleFactor,
         useCORS: true,
         allowTaint: true,
         logging: false,
         backgroundColor: '#ffffff',
-        width: 724 // Content width inside 35px padding
+        imageTimeout: 0,
+        width: 724
       });
 
       a4Frame.remove();
@@ -1209,8 +1211,8 @@
         throw new Error("Canvas rendering produced an empty image");
       }
 
-      // 3. Create A4 jsPDF with 100% exact A4 aspect ratio (210mm x 297mm)
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      // 3. Create A4 jsPDF with Ultra-HD PNG crisp rendering
+      const imgData = canvas.toDataURL('image/png');
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('portrait', 'mm', 'a4');
       
@@ -1221,7 +1223,7 @@
       const renderWidth = 190;
       const renderHeight = (canvas.height * renderWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'JPEG', 10, 10, renderWidth, Math.min(renderHeight, pdfHeight - 20));
+      pdf.addImage(imgData, 'PNG', 10, 10, renderWidth, Math.min(renderHeight, pdfHeight - 20), undefined, 'FAST');
       
       const cleanNo = inv.invoiceNo.replace(/[^a-zA-Z0-9]/g, '_');
       const fileName = `Invoice_${cleanNo}.pdf`;
